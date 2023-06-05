@@ -1,1 +1,56 @@
 
+#######################   hard link to directory not allowed #############
+[rkyasan44@testhost commands]$ ls -ltr
+total 0
+[rkyasan44@testhost commands]$ mkdir dir1
+[rkyasan44@testhost commands]$ ls -ltr
+total 0
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Jun  5 12:18 dir1
+[rkyasan44@testhost commands]$ ln dir1/ hardlinkdir2
+ln: dir1/: hard link not allowed for directory
+[rkyasan44@testhost commands]$
+
+############################################################# inodes and permission same for hard links ####################
+
+[rkyasan44@testhost commands]$ cat > file1.txt
+This is ram sagar hard links file1.txt
+^C
+[rkyasan44@testhost commands]$ ls -ltr
+total 4
+drwxr-xr-x. 2 rkyasan44 rkyasan44  6 Jun  5 12:18 dir1
+-rw-r--r--. 1 rkyasan44 rkyasan44 39 Jun  5 12:21 file1.txt
+[rkyasan44@testhost commands]$ ln file1.txt linkfile2.txt
+[rkyasan44@testhost commands]$ ls -ltr
+total 8
+drwxr-xr-x. 2 rkyasan44 rkyasan44  6 Jun  5 12:18 dir1
+-rw-r--r--. 2 rkyasan44 rkyasan44 39 Jun  5 12:21 linkfile2.txt
+-rw-r--r--. 2 rkyasan44 rkyasan44 39 Jun  5 12:21 file1.txt
+[rkyasan44@testhost commands]$ ls -ltri
+total 8
+51694573 drwxr-xr-x. 2 rkyasan44 rkyasan44  6 Jun  5 12:18 dir1
+18739058 -rw-r--r--. 2 rkyasan44 rkyasan44 39 Jun  5 12:21 linkfile2.txt
+18739058 -rw-r--r--. 2 rkyasan44 rkyasan44 39 Jun  5 12:21 file1.txt
+[rkyasan44@testhost commands]$ cat >> file1.txt
+Hello new line added file1.txt
+^C
+[rkyasan44@testhost commands]$
+[rkyasan44@testhost commands]$ cat file1.txt linkfile2.txt
+This is ram sagar hard links file1.txt
+Hello new line added file1.txt
+This is ram sagar hard links file1.txt
+Hello new line added file1.txt
+[rkyasan44@testhost commands]$ rm file1.txt
+[rkyasan44@testhost commands]$ ls -lt
+total 4
+-rw-r--r--. 1 rkyasan44 rkyasan44 70 Jun  5 12:21 linkfile2.txt
+drwxr-xr-x. 2 rkyasan44 rkyasan44  6 Jun  5 12:18 dir1
+[rkyasan44@testhost commands]$ ls -ltr
+total 4
+drwxr-xr-x. 2 rkyasan44 rkyasan44  6 Jun  5 12:18 dir1
+-rw-r--r--. 1 rkyasan44 rkyasan44 70 Jun  5 12:21 linkfile2.txt
+[rkyasan44@testhost commands]$ cat linkfile2.txt
+This is ram sagar hard links file1.txt
+Hello new line added file1.txt
+[rkyasan44@testhost commands]$
+
+
