@@ -1,0 +1,13 @@
+[rkyasan44@testhost commands]$ cat sample.config
+This is redhat file configuration
+upto 2GB RAm
+upto 1 cpu allowed
+[rkyasan44@testhost commands]$ wc -l sample.config
+3 sample.config
+[rkyasan44@testhost commands]$ wc -c sample.config
+66 sample.config
+[rkyasan44@testhost commands]$ wc -w sample.config
+12 sample.config
+[rkyasan44@testhost commands]$ wc sample.config
+ 3 12 66 sample.config
+[rkyasan44@testhost commands]$
