@@ -1,0 +1,123 @@
+[rkyasan44@localhost commands]$ uname
+Linux
+[rkyasan44@localhost commands]$ uname -a
+Linux localhost.localdomain 5.14.0-70.22.1.el9_0.x86_64 #1 SMP PREEMPT Tue Aug 2 10:02:12 EDT 2022 x86_64 x86_64 x86_64 GNU/Linux
+[rkyasan44@localhost commands]$ date
+Mon Jun  5 11:25:56 AM EDT 2023
+[rkyasan44@localhost commands]$ host
+host         hostid       hostname     hostnamectl
+[rkyasan44@localhost commands]$ host
+Usage: host [-aCdilrTvVw] [-c class] [-N ndots] [-t type] [-W time]
+            [-R number] [-m flag] [-p port] hostname [server]
+       -a is equivalent to -v -t ANY
+       -A is like -a but omits RRSIG, NSEC, NSEC3
+       -c specifies query class for non-IN data
+       -C compares SOA records on authoritative nameservers
+       -d is equivalent to -v
+       -l lists all hosts in a domain, using AXFR
+       -m set memory debugging flag (trace|record|usage)
+       -N changes the number of dots allowed before root lookup is done
+       -p specifies the port on the server to query
+       -r disables recursive processing
+       -R specifies number of retries for UDP packets
+       -s a SERVFAIL response should stop query
+       -t specifies the query type
+       -T enables TCP/IP mode
+       -U enables UDP mode
+       -v enables verbose output
+       -V print version number and exit
+       -w specifies to wait forever for a reply
+       -W specifies how long to wait for a reply
+       -4 use IPv4 query transport only
+       -6 use IPv6 query transport only
+[rkyasan44@localhost commands]$ hostname
+localhost.localdomain
+[rkyasan44@localhost commands]$ hostnamectl
+   Static hostname: n/a
+Transient hostname: localhost
+         Icon name: computer-vm
+           Chassis: vm 🖴
+        Machine ID: 7d25f54597b84f17b4a8dfe9f861a1d8
+           Boot ID: 3fe3b1b552174ae9b93eae3d44261fce
+    Virtualization: oracle
+  Operating System: Red Hat Enterprise Linux 9.0 (Plow)
+       CPE OS Name: cpe:/o:redhat:enterprise_linux:9::baseos
+            Kernel: Linux 5.14.0-70.22.1.el9_0.x86_64
+      Architecture: x86-64
+   Hardware Vendor: innotek GmbH
+    Hardware Model: VirtualBox
+[rkyasan44@localhost commands]$
+
+Above command shows statc hostanme currently it is empty, temporary hosname and vm provide details.
+
+==================================================> change system name to recoginize between multiple system
+
+
+[rkyasan44@localhost commands]$ hostnamectl set-hostname testhost.lab.exmaple.com
+==== AUTHENTICATING FOR org.freedesktop.hostname1.set-static-hostname ====
+Authentication is required to set the statically configured local hostname, as well as the pretty hostname.
+Authenticating as: rkyasan44
+Password:
+==== AUTHENTICATION COMPLETE ====
+
+[rkyasan44@localhost commands]$ hostnamectl
+ Static hostname: testhost.lab.exmaple.com
+       Icon name: computer-vm
+         Chassis: vm 🖴
+      Machine ID: 7d25f54597b84f17b4a8dfe9f861a1d8
+         Boot ID: 3fe3b1b552174ae9b93eae3d44261fce
+  Virtualization: oracle
+Operating System: Red Hat Enterprise Linux 9.0 (Plow)
+     CPE OS Name: cpe:/o:redhat:enterprise_linux:9::baseos
+          Kernel: Linux 5.14.0-70.22.1.el9_0.x86_64
+    Architecture: x86-64
+ Hardware Vendor: innotek GmbH
+  Hardware Model: VirtualBox
+[rkyasan44@localhost commands]$
+
+===========================================================> After logout and login back the changes will take affect
+
+[rkyasan44@testhost ~]$ hostname
+testhost.lab.exmaple.com
+[rkyasan44@testhost ~]$ hostnamectl
+ Static hostname: testhost.lab.exmaple.com
+       Icon name: computer-vm
+         Chassis: vm 🖴
+      Machine ID: 7d25f54597b84f17b4a8dfe9f861a1d8
+         Boot ID: 3fe3b1b552174ae9b93eae3d44261fce
+  Virtualization: oracle
+Operating System: Red Hat Enterprise Linux 9.0 (Plow)
+     CPE OS Name: cpe:/o:redhat:enterprise_linux:9::baseos
+          Kernel: Linux 5.14.0-70.22.1.el9_0.x86_64
+    Architecture: x86-64
+ Hardware Vendor: innotek GmbH
+  Hardware Model: VirtualBox
+[rkyasan44@testhost ~]$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
