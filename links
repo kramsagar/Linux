@@ -5,19 +5,10 @@ total 4
 -rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 11:10 file3.txt
 -rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 11:10 file2.txt
 -rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 11:12 file1.txt
-[rkyasan44@localhost commands]$ ls -s file1.txt file2.txt
-4 file1.txt  0 file2.txt
-[rkyasan44@localhost commands]$ ls -ltr
-total 4
--rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 11:10 file5.txt
--rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 11:10 file4.txt
--rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 11:10 file3.txt
--rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 11:10 file2.txt
--rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 11:12 file1.txt
-[rkyasan44@localhost commands]$ ln file1.txt file2.txt
-ln: failed to create hard link 'file2.txt': File exists
+
 [rkyasan44@localhost commands]$ ln -s file1.txt file2.txt
 ln: failed to create symbolic link 'file2.txt': File exists
+
 [rkyasan44@localhost commands]$ ln -s file1.txt file6.txt
 [rkyasan44@localhost commands]$ ls -ltr
 total 4
@@ -27,8 +18,24 @@ total 4
 -rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 11:10 file2.txt
 -rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 11:12 file1.txt
 lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 11:14 file6.txt -> file1.txt
+
+>>>>>>>>> we can see symbolic link (l) is appended to in the file character place.
+
 [rkyasan44@localhost commands]$ cat file6.txt
 Hi
 This is the cat command executed on file1.txt
 @Ram
+
+[rkyasan44@localhost commands]$ ls -li
+total 4
+18739059 -rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 11:12 file1.txt
+18739067 lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 11:14 file6.txt -> file1.txt
 [rkyasan44@localhost commands]$
+
+>>>>>>>>>>> The permissions and inodes are different for softlinked files.
+
+
+
+
+
+
