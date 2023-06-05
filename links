@@ -34,8 +34,168 @@ total 4
 
 >>>>>>>>>>> The permissions and inodes are different for softlinked files.
 
+###########################################################################################################################
+
+[rkyasan44@testhost commands]$ mkdir k8s
+[rkyasan44@testhost commands]$ cp file1.txt k8s/
+[rkyasan44@testhost commands]$ ls -ltr
+total 4
+-rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:06 file1.txt
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 12:06 file2.txt -> file1.txt
+drwxr-xr-x. 2 rkyasan44 rkyasan44 23 Jun  5 12:07 k8s
+[rkyasan44@testhost commands]$ ln -s k8s kubernetes
+[rkyasan44@testhost commands]$ ls -ltr
+total 4
+-rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:06 file1.txt
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 12:06 file2.txt -> file1.txt
+drwxr-xr-x. 2 rkyasan44 rkyasan44 23 Jun  5 12:07 k8s
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  3 Jun  5 12:07 kubernetes -> k8s
+[rkyasan44@testhost commands]$ ls -ltri
+total 4
+18739058 -rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:06 file1.txt
+18739059 lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 12:06 file2.txt -> file1.txt
+18739062 drwxr-xr-x. 2 rkyasan44 rkyasan44 23 Jun  5 12:07 k8s
+18739066 lrwxrwxrwx. 1 rkyasan44 rkyasan44  3 Jun  5 12:07 kubernetes -> k8s
+[rkyasan44@testhost commands]$ cat kubernetes/file1.txt
+Hi
+This is the cat command executed on file1.txt
+@Ram
+[rkyasan44@testhost commands]$ cat k8s/file1.txt
+Hi
+This is the cat command executed on file1.txt
+@Ram
+[rkyasan44@testhost commands]$ ls -ltri k8s/file1.txt kubernetes/file1.txt file1.txt file2.txt
+18739058 -rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:06 file1.txt
+18739059 lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 12:06 file2.txt -> file1.txt
+18739063 -rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:07 kubernetes/file1.txt
+18739063 -rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:07 k8s/file1.txt
+[rkyasan44@testhost commands]$ cd kubernetes/
+[rkyasan44@testhost kubernetes]$ ls -ltri
+total 4
+18739063 -rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:07 file1.txt
+[rkyasan44@testhost kubernetes]$ ls -ltr k8s
+ls: cannot access 'k8s': No such file or directory
+[rkyasan44@testhost kubernetes]$ cd ..
+[rkyasan44@testhost commands]$ ls -ltr k8s/
+total 4
+-rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:07 file1.txt
+[rkyasan44@testhost commands]$
+
+###############################################################      Update to content ############################################################
+
+[rkyasan44@testhost commands]$ ls -ltr
+total 4
+-rw-r--r--. 1 rkyasan44 rkyasan44 54 Jun  5 12:06 file1.txt
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 12:06 file2.txt -> file1.txt
+drwxr-xr-x. 2 rkyasan44 rkyasan44 23 Jun  5 12:07 k8s
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  3 Jun  5 12:07 kubernetes -> k8s
+[rkyasan44@testhost commands]$ cat file1.txt file2.txt
+Hi
+This is the cat command executed on file1.txt
+@Ram
+Hi
+This is the cat command executed on file1.txt
+@Ram
+[rkyasan44@testhost commands]$ cat >> file1.txt
+Abc
+^C
+[rkyasan44@testhost commands]$ cat file1.txt file2.txt
+Hi
+This is the cat command executed on file1.txt
+@Ram
+Abc
+Hi
+This is the cat command executed on file1.txt
+@Ram
+Abc
+[rkyasan44@testhost commands]$ cat >> file2.txt
+update to file2
+^C
+[rkyasan44@testhost commands]$ cat file1.txt file2.txt
+Hi
+This is the cat command executed on file1.txt
+@Ram
+Abc
+update to file2
+Hi
+This is the cat command executed on file1.txt
+@Ram
+Abc
+update to file2
+[rkyasan44@testhost commands]$
 
 
+###############################################################     remove file and directories ############################################################
 
+[rkyasan44@testhost commands]$ ls -ltr
+total 128
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 12:06 file2.txt -> file1.txt
+drwxr-xr-x. 2 rkyasan44 rkyasan44 23 Jun  5 12:07 k8s
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  3 Jun  5 12:07 kubernetes -> k8s
+-rw-r--r--. 1 rkyasan44 rkyasan44 74 Jun  5 12:13 file1.txt
+[rkyasan44@testhost commands]$ rm file1.txt
+[rkyasan44@testhost commands]$ rm -rf k8s/
+[rkyasan44@testhost commands]$ ls -ltr
+total 0
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 9 Jun  5 12:06 file2.txt -> file1.txt
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 3 Jun  5 12:07 kubernetes -> k8s
+[rkyasan44@testhost commands]$ cat file2.txt
+cat: file2.txt: No such file or directory
+[rkyasan44@testhost commands]$ ls -ld kubernetes
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 3 Jun  5 12:07 kubernetes -> k8s
+[rkyasan44@testhost commands]$ cd kubernetes
+-bash: cd: kubernetes: No such file or directory
+[rkyasan44@testhost commands]$ echo############################^C
+[rkyasan44@testhost commands]$ echo ###########recactivate
 
+[rkyasan44@testhost commands]$ touch file1.txt
+[rkyasan44@testhost commands]$ ls -ltr
+total 0
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 9 Jun  5 12:06 file2.txt -> file1.txt
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 3 Jun  5 12:07 kubernetes -> k8s
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Jun  5 12:15 file1.txt
+[rkyasan44@testhost commands]$ cat file2.txt
+[rkyasan44@testhost commands]$ mkdir k8s
+[rkyasan44@testhost commands]$ ls -ltr
+total 0
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 9 Jun  5 12:06 file2.txt -> file1.txt
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 3 Jun  5 12:07 kubernetes -> k8s
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Jun  5 12:15 file1.txt
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Jun  5 12:15 k8s
+[rkyasan44@testhost commands]$ cd kubernetes/
+[rkyasan44@testhost kubernetes]$ ls -ltr
+total 0
+[rkyasan44@testhost kubernetes]$ cd ..
+[rkyasan44@testhost commands]$ touch 1.txt k8s/
+[rkyasan44@testhost commands]$ ls -ltr
+total 0
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 9 Jun  5 12:06 file2.txt -> file1.txt
+lrwxrwxrwx. 1 rkyasan44 rkyasan44 3 Jun  5 12:07 kubernetes -> k8s
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Jun  5 12:15 file1.txt
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Jun  5 12:16 k8s
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Jun  5 12:16 1.txt
+[rkyasan44@testhost commands]$ cp 1.txt k8s/
+[rkyasan44@testhost commands]$ ls -ltr
+total 0
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  9 Jun  5 12:06 file2.txt -> file1.txt
+lrwxrwxrwx. 1 rkyasan44 rkyasan44  3 Jun  5 12:07 kubernetes -> k8s
+-rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 12:15 file1.txt
+-rw-r--r--. 1 rkyasan44 rkyasan44  0 Jun  5 12:16 1.txt
+drwxr-xr-x. 2 rkyasan44 rkyasan44 19 Jun  5 12:16 k8s
+[rkyasan44@testhost commands]$ tree
+.
+├── 1.txt
+├── file1.txt
+├── file2.txt -> file1.txt
+├── k8s
+│   └── 1.txt
+└── kubernetes -> k8s
+
+2 directories, 4 files
+[rkyasan44@testhost commands]$ tree kubernetes/
+kubernetes/
+└── 1.txt
+
+0 directories, 1 file
+[rkyasan44@testhost commands]$
 
