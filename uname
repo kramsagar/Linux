@@ -38,3 +38,12 @@ x86_64
 GNU/Linux
 [rkyasan44@localhost ~]$
 
+
+[rkyasan44@localhost ~]$ uname -n
+localhost.localdomain
+[rkyasan44@localhost ~]$ hostname
+localhost.localdomain
+[rkyasan44@localhost ~]$
+
+
+
