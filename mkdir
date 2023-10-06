@@ -61,5 +61,161 @@ removed directory 'k8s/docker/terraform'
 removed directory 'k8s/docker'
 removed directory 'k8s'
 
+==============================================> ls : list files in created timestamp in reverse order
+[rkyasan44@rhel-server k8s]$ ls -ltr
+total 0
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name9
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name8
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name7
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name6
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name5
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name4
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name3
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name2
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name10
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:06 name1
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:09 a
+[rkyasan44@rhel-server k8s]$ ls -ltra
+total 4
+drwx------. 20 rkyasan44 rkyasan44 4096 Oct  6 10:06 ..
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name9
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name8
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name7
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name6
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name5
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name4
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name3
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name2
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name10
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:06 name1
+-rw-r--r--.  1 rkyasan44 rkyasan44    0 Oct  6 10:09 a
+drwxr-xr-x.  2 rkyasan44 rkyasan44  146 Oct  6 10:09 .
+[rkyasan44@rhel-server k8s]$
+
+========================================================>  cat & touch (cretae empty file and also update timestamp of the existing file)
+
+[rkyasan44@rhel-server k8s]$ cat file`^C
+[rkyasan44@rhel-server k8s]$ touch file
+[rkyasan44@rhel-server k8s]$ cat file
+[rkyasan44@rhel-server k8s]$ ls -ltr file
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:13 file
+[rkyasan44@rhel-server k8s]$ cat > file
+hi hello file1
+^C
+[rkyasan44@rhel-server k8s]$ cat file
+hi hello file1
+[rkyasan44@rhel-server k8s]$ cat >> file
+hello 2nd line
+^C
+[rkyasan44@rhel-server k8s]$ cat file
+hi hello file1
+hello 2nd line
+[rkyasan44@rhel-server k8s]$ ls -ltr file
+-rw-r--r--. 1 rkyasan44 rkyasan44 30 Oct  6 10:13 file
+[rkyasan44@rhel-server k8s]$ date
+Friday 06 October 2023 10:13:59 AM IST
+[rkyasan44@rhel-server k8s]$ date
+Friday 06 October 2023 10:14:02 AM IST
+[rkyasan44@rhel-server k8s]$ touch file
+[rkyasan44@rhel-server k8s]$ ls -ltr file
+-rw-r--r--. 1 rkyasan44 rkyasan44 30 Oct  6 10:14 file
+[rkyasan44@rhel-server k8s]$ cat file
+hi hello file1
+hello 2nd line
+[rkyasan44@rhel-server k8s]$
+
+======================================================================> removing directories
+
+[rkyasan44@rhel-server ~]$ rm -r k8s/
+[rkyasan44@rhel-server ~]$ rm -rv name1/
+removed directory 'name1/'
+[rkyasan44@rhel-server ~]$ rm -rv cloud/
+removed directory 'cloud/ram1/ram123/ramram1'
+removed directory 'cloud/ram1/ram123/ramram2'
+removed directory 'cloud/ram1/ram123/ramram3'
+removed directory 'cloud/ram1/ram123'
+removed directory 'cloud/ram1'
+removed directory 'cloud/ram2'
+removed directory 'cloud/ram3'
+removed directory 'cloud/ram4'
+removed directory 'cloud/ram5'
+removed directory 'cloud/ram6'
+removed directory 'cloud/ram7'
+removed directory 'cloud/ram8'
+removed directory 'cloud/ram9'
+removed directory 'cloud/ram10'
+removed directory 'cloud/'
+[rkyasan44@rhel-server ~]$
+
+==================================================================> cp command for cpy files and directories
+[rkyasan44@rhel-server cp]$ ls -ltr
+total 0
+[rkyasan44@rhel-server cp]$ mkdir ram1
+[rkyasan44@rhel-server cp]$ mkdir ram2
+[rkyasan44@rhel-server cp]$ cp ram1/ ram2/
+cp: -r not specified; omitting directory 'ram1/'
+[rkyasan44@rhel-server cp]$ cp -r ram1/ ram2/
+[rkyasan44@rhel-server cp]$ cd ram2/
+[rkyasan44@rhel-server ram2]$ ls -ltr
+total 0
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Oct  6 10:37 ram1
+[rkyasan44@rhel-server ram2]$
+
+==================================================================> mv files to directory
+[rkyasan44@rhel-server mv]$ ls -ltr
+total 0
+[rkyasan44@rhel-server mv]$ touch f1
+[rkyasan44@rhel-server mv]$ mkdir m1
+[rkyasan44@rhel-server mv]$ ls -ltr
+total 0
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:40 f1
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Oct  6 10:40 m1
+[rkyasan44@rhel-server mv]$ mv f1 m1/
+[rkyasan44@rhel-server mv]$ ls -ltr
+total 0
+drwxr-xr-x. 2 rkyasan44 rkyasan44 16 Oct  6 10:40 m1
+[rkyasan44@rhel-server mv]$ cd m1/
+[rkyasan44@rhel-server m1]$ ls -ltr
+total 0
+-rw-r--r--. 1 rkyasan44 rkyasan44 0 Oct  6 10:40 f1
+[rkyasan44@rhel-server m1]$
+
+--------------------> move directories between directories
+
+[rkyasan44@rhel-server mv]$ cd new/
+[rkyasan44@rhel-server new]$ ls -ltr
+total 0
+[rkyasan44@rhel-server new]$ mkdir m1
+[rkyasan44@rhel-server new]$ mkdir m2
+[rkyasan44@rhel-server new]$ ls -tlr
+total 0
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Oct  6 10:41 m1
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Oct  6 10:41 m2
+[rkyasan44@rhel-server new]$ mv m1/ m2/
+[rkyasan44@rhel-server new]$ ls -ltr
+total 0
+drwxr-xr-x. 3 rkyasan44 rkyasan44 16 Oct  6 10:41 m2
+[rkyasan44@rhel-server new]$ cd m2/
+[rkyasan44@rhel-server m2]$ ls -ltr
+total 0
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Oct  6 10:41 m1
+[rkyasan44@rhel-server m2]$
+
+------------------------> rename folder name or file name
+[rkyasan44@rhel-server new1]$ ls -ltr
+total 0
+[rkyasan44@rhel-server new1]$ mkdir m1
+[rkyasan44@rhel-server new1]$ ls -ltr
+total 0
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Oct  6 10:43 m1
+[rkyasan44@rhel-server new1]$ mv m1/ m2
+[rkyasan44@rhel-server new1]$ ls -ltr
+total 0
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Oct  6 10:43 m2
+[rkyasan44@rhel-server new1]$
+
+
+
+
 
 
