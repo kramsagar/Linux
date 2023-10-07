@@ -1,1 +1,198 @@
+[rkyasan44@rhel-server etc]$ grep db  nsswitch.conf
+#       compat                  Use /etc files plus *_compat pseudo-db
+#       db                      Use the pre-processed /var/db files
+# To use 'db', install the appropriate package(s) (provide 'makedb' and
+# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+# passwd:    db files
+# shadow:    db files
+# group:     db files
+
+[rkyasan44@rhel-server etc]$ grep "db"  nsswitch.conf
+#       compat                  Use /etc files plus *_compat pseudo-db
+#       db                      Use the pre-processed /var/db files
+# To use 'db', install the appropriate package(s) (provide 'makedb' and
+# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+# passwd:    db files
+# shadow:    db files
+# group:     db files
+
+[rkyasan44@rhel-server etc]$ grep to nsswitch.conf
+# If you want to make changes to nsswitch.conf please modify
+automount:  sss files
+# initgroups, netgroup, networks, passwd, protocols, publickey,
+#       ldap                    Use LDAP directory server
+#          lead to unexpected behaviour, especially with how long
+# you want to be looked up first in the databases, like this:
+# In order of likelihood of use to accelerate lookup.
+# Allow initgroups to default to the setting for group.
+protocols:  files
+
+[rkyasan44@rhel-server etc]$ grep To nsswitch.conf
+# To use 'db', install the appropriate package(s) (provide 'makedb' and
+
+
+[rkyasan44@rhel-server etc]$ grep -i to nsswitch.conf
+# If you want to make changes to nsswitch.conf please modify
+automount:  sss files
+# initgroups, netgroup, networks, passwd, protocols, publickey,
+#       ldap                    Use LDAP directory server
+#          lead to unexpected behaviour, especially with how long
+# To use 'db', install the appropriate package(s) (provide 'makedb' and
+# you want to be looked up first in the databases, like this:
+# In order of likelihood of use to accelerate lookup.
+# Allow initgroups to default to the setting for group.
+protocols:  files
+[rkyasan44@rhel-server etc]$
+
+============================================================================Search multple tokens=======
+[rkyasan44@rhel-server etc]$ grep -e "To" -e "db" nsswitch.conf
+#       compat                  Use /etc files plus *_compat pseudo-db
+#       db                      Use the pre-processed /var/db files
+# To use 'db', install the appropriate package(s) (provide 'makedb' and
+# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+# passwd:    db files
+# shadow:    db files
+# group:     db files
+
+[rkyasan44@rhel-server etc]$ egrep "To|db" nsswitch.conf
+#       compat                  Use /etc files plus *_compat pseudo-db
+#       db                      Use the pre-processed /var/db files
+# To use 'db', install the appropriate package(s) (provide 'makedb' and
+# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+# passwd:    db files
+# shadow:    db files
+# group:     db files
+[rkyasan44@rhel-server etc]$
+
+============================================================================Search multple tokens on multiple files=======
+
+[rkyasan44@rhel-server etc]$ grep -e "To" -e "db" nsswitch.conf > /tmp/nstmp.conf
+
+[rkyasan44@rhel-server etc]$ grep -e "To" -e "db" nsswitch.conf  /tmp/nstmp.conf
+nsswitch.conf:# compat                  Use /etc files plus *_compat pseudo-db
+nsswitch.conf:# db                      Use the pre-processed /var/db files
+nsswitch.conf:# To use 'db', install the appropriate package(s) (provide 'makedb' and
+nsswitch.conf:# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+nsswitch.conf:# passwd:    db files
+nsswitch.conf:# shadow:    db files
+nsswitch.conf:# group:     db files
+/tmp/nstmp.conf:#       compat                  Use /etc files plus *_compat pseudo-db
+/tmp/nstmp.conf:#       db                      Use the pre-processed /var/db files
+/tmp/nstmp.conf:# To use 'db', install the appropriate package(s) (provide 'makedb' and
+/tmp/nstmp.conf:# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+/tmp/nstmp.conf:# passwd:    db files
+/tmp/nstmp.conf:# shadow:    db files
+/tmp/nstmp.conf:# group:     db files
+[rkyasan44@rhel-server etc]$
+
+============================================= keyworked starting at the line or ending of the line ===================
+
+[rkyasan44@rhel-server etc]$ grep  "db" nsswitch.conf  /tmp/nstmp.conf
+nsswitch.conf:# compat                  Use /etc files plus *_compat pseudo-db
+nsswitch.conf:# db                      Use the pre-processed /var/db files
+nsswitch.conf:# To use 'db', install the appropriate package(s) (provide 'makedb' and
+nsswitch.conf:# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+nsswitch.conf:# passwd:    db files
+nsswitch.conf:# shadow:    db files
+nsswitch.conf:# group:     db files
+/tmp/nstmp.conf:#       compat                  Use /etc files plus *_compat pseudo-db
+/tmp/nstmp.conf:#       db                      Use the pre-processed /var/db files
+/tmp/nstmp.conf:# To use 'db', install the appropriate package(s) (provide 'makedb' and
+/tmp/nstmp.conf:# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+/tmp/nstmp.conf:# passwd:    db files
+/tmp/nstmp.conf:# shadow:    db files
+/tmp/nstmp.conf:# group:     db files
+
+[rkyasan44@rhel-server etc]$ grep  "^#\sdb" nsswitch.conf  /tmp/nstmp.conf
+nsswitch.conf:# db                      Use the pre-processed /var/db files
+/tmp/nstmp.conf:#       db                      Use the pre-processed /var/db files
+
+
+[rkyasan44@rhel-server etc]$ grep  "files" nsswitch.conf  /tmp/nstmp.conf
+nsswitch.conf:#     passwd: sss files
+nsswitch.conf:#     passwd: files
+nsswitch.conf:#     hosts: files dns
+nsswitch.conf:#     passwd: sss files # from profile
+nsswitch.conf:#     hosts: files dns  # from user file
+nsswitch.conf:passwd:     files sss systemd
+nsswitch.conf:group:      files sss systemd
+nsswitch.conf:netgroup:   sss files
+nsswitch.conf:automount:  sss files
+nsswitch.conf:services:   sss files
+nsswitch.conf:# compat                  Use /etc files plus *_compat pseudo-db
+nsswitch.conf:# db                      Use the pre-processed /var/db files
+nsswitch.conf:# files                   Use the local files in /etc
+nsswitch.conf:# 'sssd' performs its own 'files'-based caching, so it should generally
+nsswitch.conf:# come before 'files'.
+nsswitch.conf:# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+nsswitch.conf:# passwd:    db files
+nsswitch.conf:# shadow:    db files
+nsswitch.conf:# group:     db files
+nsswitch.conf:shadow:     files
+nsswitch.conf:hosts:      files dns myhostname
+nsswitch.conf:aliases:    files
+nsswitch.conf:ethers:     files
+nsswitch.conf:gshadow:    files
+nsswitch.conf:# initgroups: files
+nsswitch.conf:networks:   files dns
+nsswitch.conf:protocols:  files
+nsswitch.conf:publickey:  files
+nsswitch.conf:rpc:        files
+/tmp/nstmp.conf:#       compat                  Use /etc files plus *_compat pseudo-db
+/tmp/nstmp.conf:#       db                      Use the pre-processed /var/db files
+/tmp/nstmp.conf:# libnss_db.so.*), and place the 'db' in front of 'files' for entries
+/tmp/nstmp.conf:# passwd:    db files
+/tmp/nstmp.conf:# shadow:    db files
+/tmp/nstmp.conf:# group:     db files
+
+[rkyasan44@rhel-server etc]$ grep  "files$" nsswitch.conf  /tmp/nstmp.conf
+nsswitch.conf:#     passwd: sss files
+nsswitch.conf:#     passwd: files
+nsswitch.conf:netgroup:   sss files
+nsswitch.conf:automount:  sss files
+nsswitch.conf:services:   sss files
+nsswitch.conf:# db                      Use the pre-processed /var/db files
+nsswitch.conf:# passwd:    db files
+nsswitch.conf:# shadow:    db files
+nsswitch.conf:# group:     db files
+nsswitch.conf:shadow:     files
+nsswitch.conf:aliases:    files
+nsswitch.conf:ethers:     files
+nsswitch.conf:gshadow:    files
+nsswitch.conf:# initgroups: files
+nsswitch.conf:protocols:  files
+nsswitch.conf:publickey:  files
+nsswitch.conf:rpc:        files
+/tmp/nstmp.conf:#       db                      Use the pre-processed /var/db files
+/tmp/nstmp.conf:# passwd:    db files
+/tmp/nstmp.conf:# shadow:    db files
+/tmp/nstmp.conf:# group:     db files
+[rkyasan44@rhel-server etc]$
+
+
+=====================================================================================search grep via pipe operation==========================================
+
+[root@rhel-server etc]# semanage fcontext -l | grep sshd  | wc -l
+13
+[root@rhel-server etc]# semanage fcontext -l | grep sshd
+/etc/rc\.d/init\.d/sshd                            regular file       system_u:object_r:sshd_initrc_exec_t:s0
+/etc/ssh/primes                                    regular file       system_u:object_r:sshd_key_t:s0
+/etc/ssh/ssh_host.*_key                            regular file       system_u:object_r:sshd_key_t:s0
+/etc/ssh/ssh_host.*_key\.pub                       regular file       system_u:object_r:sshd_key_t:s0
+/usr/lib/systemd/system/sshd-keygen.*              regular file       system_u:object_r:sshd_keygen_unit_file_t:s0
+/usr/lib/systemd/system/sshd.*                     regular file       system_u:object_r:sshd_unit_file_t:s0
+/usr/libexec/openssh/sshd-keygen                   regular file       system_u:object_r:sshd_keygen_exec_t:s0
+/usr/sbin/gsisshd                                  regular file       system_u:object_r:sshd_exec_t:s0
+/usr/sbin/sshd                                     regular file       system_u:object_r:sshd_exec_t:s0
+/usr/sbin/sshd-keygen                              regular file       system_u:object_r:sshd_keygen_exec_t:s0
+/var/empty/sshd/etc/localtime                      regular file       system_u:object_r:locale_t:s0
+/var/run/sshd\.init\.pid                           regular file       system_u:object_r:sshd_var_run_t:s0
+/var/run/sshd\.pid                                 regular file       system_u:object_r:sshd_var_run_t:s0
+[root@rhel-server etc]#
+
+
+
+
+
+
 
