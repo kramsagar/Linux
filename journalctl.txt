@@ -1,0 +1,24 @@
+
+#Find out when was the user login last time #################################
+
+root@rkcna:/home# journalctl -xe | grep saik
+Oct 09 10:32:11 rkcna groupadd[5852]: group added to /etc/group: name=saik, GID=1001
+Oct 09 10:32:11 rkcna groupadd[5852]: group added to /etc/gshadow: name=saik
+Oct 09 10:32:11 rkcna groupadd[5852]: new group: name=saik, GID=1001
+Oct 09 10:32:11 rkcna useradd[5858]: new user: name=saik, UID=1001, GID=1001, home=/home/saik, shell=/bin/bash, from=/dev/pts/1
+Oct 09 10:32:19 rkcna passwd[5869]: pam_unix(passwd:chauthtok): password changed for saik
+Oct 09 10:32:48 rkcna chfn[5870]: changed user 'saik' information
+Oct 09 10:40:21 rkcna usermod[5892]: change user 'saik' UID from '1001' to '1111'
+Oct 09 10:50:03 rkcna su[5928]: (to saik) root on pts/1
+Oct 09 10:50:03 rkcna su[5928]: pam_unix(su-l:session): session opened for user saik(uid=1111) by rkyasan44(uid=0)
+Oct 09 10:50:59 rkcna su[5944]: (to root) saik on pts/1
+Oct 09 11:58:09 rkcna su[6178]: (to saik) root on pts/2
+Oct 09 11:58:09 rkcna su[6178]: pam_unix(su-l:session): session opened for user saik(uid=1111) by rkyasan44(uid=0)
+Oct 09 11:58:45 rkcna su[6186]: (to root) saik on pts/2
+Oct 09 12:05:36 rkcna usermod[6210]: change user 'saik' shell from '/bin/bash' to '/usr/sbin/nologin'
+Oct 09 12:05:54 rkcna su[6217]: (to saik) root on pts/1
+Oct 09 12:05:54 rkcna su[6217]: pam_unix(su:session): session opened for user saik(uid=1111) by rkyasan44(uid=0)
+Oct 09 12:05:54 rkcna su[6217]: pam_unix(su:session): session closed for user saik
+root@rkcna:/home#
+
+
