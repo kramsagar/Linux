@@ -1,0 +1,50 @@
+root@rkcna:~# adduser saik
+Adding user `saik' ...
+Adding new group `saik' (1001) ...
+Adding new user `saik' (1001) with group `saik' ...
+Creating home directory `/home/saik' ...
+Copying files from `/etc/skel' ...
+New password:
+Retype new password:
+passwd: password updated successfully
+Changing the user information for saik
+Enter the new value, or press ENTER for the default
+        Full Name []: sai p kumar
+        Room Number []: 1244
+        Work Phone []: 8688342333
+        Home Phone []: 09111999
+        Other []: 333
+Is the information correct? [Y/n] Y
+    
+root@rkcna:~# cat /etc/passwd | grep saik
+saik:x:1001:1001:sai p kumar,1244,8688342333,09111999,333:/home/saik:/bin/bash
+    
+root@rkcna:~# cat /etc/group | grep 1001
+saik:x:1001:
+    
+root@rkcna:~# ls -ld /home/saik
+drwxr-x--- 2 saik saik 4096 Oct  9 10:32 /home/saik
+root@rkcna:~#
+    
+root@rkcna:~# id saik
+uid=1001(saik) gid=1001(saik) groups=1001(saik)
+root@rkcna:~#
+
+###################################################################  if you want to assign your own user id insted of default #########################
+root@rkcna:~# usermod -u 1111 saik
+root@rkcna:~# id saik
+    
+uid=1111(saik) gid=1001(saik) groups=1001(saik)
+root@rkcna:~#
+    
+###################################################################  Modify the user comments ################################################################### 
+
+root@rkcna:~# cat /etc/passwd | grep saik
+saik:x:1111:1001:sai p kumar,1244,8688342333,09111999,333:/home/saik:/bin/bash
+root@rkcna:~# usermod -c "this is devs engineeer" saik
+root@rkcna:~# grep saik /etc/passwd
+saik:x:1111:1001:this is devs engineeer:/home/saik:/bin/bash
+root@rkcna:~#
+
+
+
