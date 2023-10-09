@@ -46,5 +46,82 @@ root@rkcna:~# grep saik /etc/passwd
 saik:x:1111:1001:this is devs engineeer:/home/saik:/bin/bash
 root@rkcna:~#
 
+###################################################################  deleted saik home driectory; create a directory by root ; and modify the folder owner ############################################# 
+root@rkcna:/home# ls -ltr
+total 8
+drwxr-x--- 18 rkyasan44 rkyasan44 4096 Oct  7 19:00 rkyasan44
+drwxr-x---  3 saik      saik      4096 Oct  9 10:50 saik
+
+root@rkcna:/home# rm -rf saik
+root@rkcna:/home# mkdir saik
+root@rkcna:/home# ls -ltr
+total 8
+drwxr-x--- 18 rkyasan44 rkyasan44 4096 Oct  7 19:00 rkyasan44
+drwxr-xr-x  2 root      root      4096 Oct  9 11:57 saik
+
+root@rkcna:/home# su - saik
+saik@rkcna:~$ pwd
+/home/saik
+saik@rkcna:~$ touch 1
+touch: cannot touch '1': Permission denied
+
+saik@rkcna:~$ chown saik /home/saik
+chown: changing ownership of '/home/saik': Operation not permitted
+saik@rkcna:~$ su root
+Password:
+
+root@rkcna:/home/saik#  chown saik /home/saik
+root@rkcna:/home/saik# pwd
+/home/saik
+root@rkcna:/home/saik# ls -ltr
+total 0
+root@rkcna:/home/saik# touch 1
+root@rkcna:/home/saik# ls -ltr
+total 0
+-rw-r--r-- 1 root root 0 Oct  9 11:59 1
+
+#########################################################################################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
