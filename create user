@@ -292,6 +292,81 @@ ram456:!!:19649:0:99999:7:::
 [root@rhel-server ~]# grep cka /etc/group
 ckagroup:x:1716:
 
+#change primary group of the existing user
+[root@rhel-server ~]# id ram1
+uid=1711(ram1) gid=1711(ram1) groups=1711(ram1)
+[root@rhel-server ~]# grep cka /etc/group
+ckagroup:x:1716:
+[root@rhel-server ~]# usermod -g 1716 ram1
+[root@rhel-server ~]# grep cka /etc/group
+ckagroup:x:1716:
+[root@rhel-server ~]# id ram1
+uid=1711(ram1) gid=1716(ckagroup) groups=1716(ckagroup)
+[root@rhel-server ~]#
+
+#when you create file or directory, the new attached user group will be created.
+[ram1@rhel-server ~]$ touch 123
+[ram1@rhel-server ~]$ ls -ltr
+total 0
+-rw-r--r--. 1 ram1 ckagroup 0 Oct 19 10:51 123
+drwxr-xr-x. 2 ram1 ckagroup 6 Oct 19 10:52 1
+[ram1@rhel-server ~]$
+
+#Add multiple groups to the user (-G option for adding secondary group names)
+[root@rhel-server ~]# egrep '1717|1718|1719' /etc/group
+devops:x:1717:
+linadmin:x:1718:ram1
+poweru:x:1719:ram1
+[root@rhel-server ~]# id ram1
+uid=1711(ram1) gid=1716(ckagroup) groups=1716(ckagroup)
+[root@rhel-server ~]# usermod -G 1717 ram1
+[root@rhel-server ~]# id ram1
+uid=1711(ram1) gid=1716(ckagroup) groups=1716(ckagroup),1717(devops)
+[root@rhel-server ~]# usermod -G 1718,1719 ram1  ### 
+[root@rhel-server ~]# id ram1
+uid=1711(ram1) gid=1716(ckagroup) groups=1716(ckagroup),1718(linadmin),1719(poweru)
+
+#How to see number of users inside group. #it displays the users count who has these groups as secondary.
+#Note in below case, 1717 is the primary group for ram1 user, but 1718, 1719 is secondary for ram123, 456, 789. that is reason you see all these user names added to the user/group entries.
+[root@rhel-server ~]# egrep '1717|1718|1719' /etc/group
+devops:x:1717:
+linadmin:x:1718:ram1
+poweru:x:1719:ram1
+[root@rhel-server ~]# id ram123
+uid=1713(ram123) gid=1713(ram123) groups=1713(ram123)
+[root@rhel-server ~]# usermod -G 1718 ram123
+[root@rhel-server ~]# usermod -G 1719 ram456
+[root@rhel-server ~]# usermod -G 1719 ram789
+[root@rhel-server ~]# egrep '1717|1718|1719' /etc/group
+devops:x:1717:
+linadmin:x:1718:ram1,ram123
+poweru:x:1719:ram1,ram456,ram789
+[root@rhel-server ~]#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
