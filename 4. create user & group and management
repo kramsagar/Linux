@@ -344,6 +344,51 @@ poweru:x:1719:ram1,ram456,ram789
 [root@rhel-server ~]#
 
 
+#Delete the groups and see what happend to primary users and secondary users?
+
+[root@rhel-server ~]# tail -1 /etc/group
+poweru:x:1719:ram1,ram456,ram789
+
+[root@rhel-server ~]# gpasswd -a ramk1 poweru
+Adding user ramk1 to group poweru
+[root@rhel-server ~]# gpasswd -a ram2  poweru
+Adding user ram2 to group poweru
+
+[root@rhel-server ~]#  id ram1 ram2 ramk1 ram456 ram789 ram3
+uid=1711(ram1) gid=1716(ckagroup) groups=1716(ckagroup),1718(linadmin),1719(poweru)
+uid=1712(ram2) gid=1712(ram2) groups=1712(ram2),1719(poweru)
+uid=1002(ramk1) gid=1004(ramk1) groups=1004(ramk1),1719(poweru)
+uid=1714(ram456) gid=1714(ram456) groups=1714(ram456),1719(poweru)
+uid=1715(ram789) gid=1715(ram789) groups=1715(ram789),1719(poweru)
+uid=1716(ram3) gid=1719(poweru) groups=1719(poweru)
+[root@rhel-server ~]#
+
+[root@rhel-server ~]# grep poweru /etc/group
+poweru:x:1719:ram1,ram456,ram789,ramk1,ram2
+[root@rhel-server ~]#
+
+[root@rhel-server ~]# groupdel poweru
+groupdel: cannot remove the primary group of user 'ram3'  #**********************> As the poweru is the primary group of ram3, your cannot delete.
+[root@rhel-server ~]# grep poweru /etc/group
+poweru:x:1719:ram1,ram456,ram789,ramk1,ram2
+[root@rhel-server ~]#
+
+[root@rhel-server ~]# usermod -g ram3 ram3  ########### Unlink the ram3 primary group of poweru
+[root@rhel-server ~]# groupdel poweru  ###**** Now group deleted as all the users are secondary
+[root@rhel-server ~]#  id ram1 ram2 ramk1 ram456 ram789 ram3
+uid=1711(ram1) gid=1716(ckagroup) groups=1716(ckagroup),1718(linadmin)
+uid=1712(ram2) gid=1712(ram2) groups=1712(ram2)
+uid=1002(ramk1) gid=1004(ramk1) groups=1004(ramk1)
+uid=1714(ram456) gid=1714(ram456) groups=1714(ram456)
+uid=1715(ram789) gid=1715(ram789) groups=1715(ram789)
+uid=1716(ram3) gid=1720(ram3) groups=1720(ram3)
+[root@rhel-server ~]# grep poweru /etc/group
+[root@rhel-server ~]#
+
+
+
+
+
 
 
 
