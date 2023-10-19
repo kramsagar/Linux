@@ -250,6 +250,51 @@ Maximum number of days between password change          : 50
 Number of days of warning before password expires       : 20
 [root@rhel-server ~]#
 
+# customize the login default props for all users in the system (i have modified the /etc/login.defs file)
+
+[root@rhel-server ~]# useradd ram456
+[root@rhel-server ~]# chage -l ram456
+Last password change                                    : Oct 19, 2023
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
+[root@rhel-server ~]# vi /etc/login.defs
+[root@rhel-server ~]# chage -l ram456
+Last password change                                    : Oct 19, 2023
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
+[root@rhel-server ~]# useradd ram789
+[root@rhel-server ~]# chage -l ram789
+Last password change                                    : Oct 19, 2023
+Password expires                                        : Jan 27, 2024
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 10
+Maximum number of days between password change          : 100
+Number of days of warning before password expires       : 3
+[root@rhel-server ~]#
+[root@rhel-server ~]# grep ram789 /etc/shadow
+ram789:!!:19649:10:100:3:::
+[root@rhel-server ~]# grep ram456 /etc/shadow
+ram456:!!:19649:0:99999:7:::
+[root@rhel-server ~]#
+
+
+###################### user group ######
+[root@rhel-server ~]# groupadd ckagroup
+[root@rhel-server ~]# grep cka /etc/group
+ckagroup:x:1716:
+
+
+
+
 
 
 
