@@ -89,6 +89,168 @@ root@rkcna:~#
 
 #################################################################################################################################################################################
 
+#create a system id with uid under 1000
+[root@rhel-server ~]# adduser -u 100 httpd
+#adduser warning: httpd's uid 100 outside of the UID_MIN 1000 and UID_MAX 60000 range.
+
+#deactive user
+[root@rhel-server ~]# usermod -s /sbin/nologin joshk
+[root@rhel-server ~]# su joshk
+This account is currently not available.
+[root@rhel-server ~]#
+
+#how to check user login history and user creation details?
+[root@rhel-server ~]# journalctl -x | grep ramk1
+Oct 19 09:45:09 rhel-server.lab.example.com useradd[2818]: new group: name=ramk1, GID=1004
+Oct 19 09:45:09 rhel-server.lab.example.com useradd[2818]: new user: name=ramk1, UID=1002, GID=1004, home=/home/ramk1, shell=/bin/bash, from=/dev/pts/1
+Oct 19 09:45:24 rhel-server.lab.example.com passwd[2825]: pam_unix(passwd:chauthtok): password changed for ramk1
+Oct 19 09:45:28 rhel-server.lab.example.com su[2830]: (to ramk1) root on pts/1
+Oct 19 09:45:28 rhel-server.lab.example.com su[2830]: pam_unix(su:session): session opened for user ramk1(uid=1002) by rkyasan44(uid=0)
+Oct 19 09:45:36 rhel-server.lab.example.com su[2830]: pam_unix(su:session): session closed for user ramk1
+
+#how to check list of shells inside system?
+[root@rhel-server ~]# chsh -l
+/bin/sh
+/bin/bash
+/usr/bin/sh
+/usr/bin/bash
+[root@rhel-server ~]#
+
+#create a user with 1711 uid, name as - ram1, it should be deactivated mode, the role as sre-eng
+adduser -u 1711 -c sre-eng -s /sbin/nologin ram1
+
+#how to add password to standard user?
+[root@rhel-server ~]# grep ram1 /etc/shadow
+ram1:!!:19649:0:99999:7:::
+[root@rhel-server ~]# passwd ram1
+Changing password for user ram1.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+[root@rhel-server ~]# grep ram1 /etc/shadow
+ram1:$6$sbTe4VkHgWMV7EYr$4U0KoWOVEdSgxo5KFX9w6PMaLQf5lBKUMcoJ3BEiOXz3Rnbf377nn5.Q9PJ0ZEMmtN6ca3DfeWGi77KYodCz21:19649:0:99999:7:::
+[root@rhel-server ~]#
+
+[root@rhel-server ~]# passwd --stdin ram1
+Changing password for user ram1.
+ram1
+passwd: all authentication tokens updated successfully.
+[root@rhel-server ~]# echo "ram123" | passwd --stdin ram1
+Changing password for user ram1.
+passwd: all authentication tokens updated successfully.
+[root@rhel-server ~]#
+
+
+#how to add password to standard user?
+[root@rhel-server ~]# grep ram1 /etc/shadow
+ram1:!!:19649:0:99999:7:::
+[root@rhel-server ~]# passwd ram1
+Changing password for user ram1.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+[root@rhel-server ~]# grep ram1 /etc/shadow
+ram1:$6$sbTe4VkHgWMV7EYr$4U0KoWOVEdSgxo5KFX9w6PMaLQf5lBKUMcoJ3BEiOXz3Rnbf377nn5.Q9PJ0ZEMmtN6ca3DfeWGi77KYodCz21:19649:0:99999:7:::
+[root@rhel-server ~]#
+
+[root@rhel-server ~]# passwd --stdin ram1
+Changing password for user ram1.
+ram1
+passwd: all authentication tokens updated successfully.
+[root@rhel-server ~]# echo "ram123" | passwd --stdin ram1
+Changing password for user ram1.
+passwd: all authentication tokens updated successfully.
+[root@rhel-server ~]#
+
+
+#how to see user account age policy?
+[root@rhel-server ~]# cat /etc/shadow | grep ram
+ramk1:$6$Bz1aaZWiah.UM93C$wzBM9hQD45voRophw/wahVDxQE4xdt5QQpLkVMuQlbyc63CqwlQntjB7Z4CXe1iv.lRjFImKoPfUAAQwNUFT/.:19649:0:99999:7:::
+ram:!!:19649:0:99999:7:::
+ram1:$6$ndQ7KZ5oaC9ZpOL0$u4VdpC6dD/Zu.MCgK94JvH9eslTAmGqgOn9PNYx7CeXLyz8AMQXxu4P6DFH9U6qafKoe9.p207myOwmPfBDdO0:19649:0:99999:7:::
+ram2:!!:19649:0:99999:7:::
+[root@rhel-server ~]# chage -l ram1
+Last password change                                    : Oct 19, 2023
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
+[root@rhel-server ~]# chage -l ram2
+Last password change                                    : Oct 19, 2023
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
+[root@rhel-server ~]# chage -l ramk1
+Last password change                                    : Oct 19, 2023
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
+[root@rhel-server ~]#
+
+
+#expire the password from now to two days?
+[root@rhel-server ~]# chage -l ramk1
+Last password change                                    : Oct 19, 2023
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 2
+[root@rhel-server ~]# chage -M 2 ramk1
+^[[A[root@rhel-server ~]# chage -l ramk1
+Last password change                                    : Oct 19, 2023
+Password expires                                        : Oct 21, 2023
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 2
+Number of days of warning before password expires       : 2
+
+
+
+#expire the account on specific day?
+[root@rhel-server ~]# chage -E 27Oct2023 ramk1
+[root@rhel-server ~]# chage -l ramk1
+Last password change                                    : Oct 19, 2023
+Password expires                                        : Oct 21, 2023
+Password inactive                                       : Oct 31, 2023
+Account expires                                         : Oct 27, 2023
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 2
+Number of days of warning before password expires       : 2
+[root@rhel-server ~]#
+
+#Modify expiry of account policy in single go
+
+[root@rhel-server ~]# chage -l ram123
+Last password change                                    : Oct 19, 2023
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
+[root@rhel-server ~]# chage -W 20 -m 15 -M 50 -E 31dec2023 ram123
+[root@rhel-server ~]# chage -l ram123
+Last password change                                    : Oct 19, 2023
+Password expires                                        : Dec 08, 2023
+Password inactive                                       : never
+Account expires                                         : Dec 31, 2023
+Minimum number of days between password change          : 15
+Maximum number of days between password change          : 50
+Number of days of warning before password expires       : 20
+[root@rhel-server ~]#
+
+
 
 
 
