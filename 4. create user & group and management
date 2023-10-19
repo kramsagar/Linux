@@ -386,6 +386,47 @@ uid=1716(ram3) gid=1720(ram3) groups=1720(ram3)
 [root@rhel-server ~]#
 
 
+#Add a user to the group & delete the user from group #seconadary approach
+[root@rhel-server ~]# tail -2 /etc/group
+linadmin:x:1718:ram1,ram123
+ram3:x:1720:
+[root@rhel-server ~]# gpasswd -a ram2 linadmin
+Adding user ram2 to group linadmin
+[root@rhel-server ~]# tail -2 /etc/group
+linadmin:x:1718:ram1,ram123,ram2
+ram3:x:1720:
+[root@rhel-server ~]# gpasswd -d ram123 linadmin
+Removing user ram123 from group linadmin
+[root@rhel-server ~]# tail -2 /etc/group
+linadmin:x:1718:ram1,ram2
+ram3:x:1720:
+[root@rhel-server ~]#
+
+#how to add a group admin to a grop ??>> (ram3 added as group admin, it can appear in the gshadow file)
+
+[root@rhel-server ~]# grep linadmin /etc/group
+linadmin:x:1718:ram1,ram2
+[root@rhel-server ~]# grep linadmin /etc/gshadow
+linadmin:!::ram1,ram2
+[root@rhel-server ~]# gpasswd -A ram3 linadmin   #*********************************
+[root@rhel-server ~]# grep linadmin /etc/group
+linadmin:x:1718:ram1,ram2
+[root@rhel-server ~]# grep linadmin /etc/gshadow
+linadmin:!:ram3:ram1,ram2
+[root@rhel-server ~]#
+
+#How to remove group admin for any group.
+[root@rhel-server ~]# gpasswd -A ''  linadmin
+[root@rhel-server ~]# grep linadmin /etc/gshadow
+linadmin:!::ram1,ram2
+[root@rhel-server ~]#
+
+
+
+
+
+
+
 
 
 
