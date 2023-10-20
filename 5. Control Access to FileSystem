@@ -1,1 +1,100 @@
+#symbolic permision method *********************************************
+
+[rkyasan44@rhel-server testperm]$ touch 123
+[rkyasan44@rhel-server testperm]$ mkdir 456
+[rkyasan44@rhel-server testperm]$ ls -ltr
+total 0
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+drwxrwxr-x. 2 rkyasan44 rkyasan44 6 Oct 20 18:08 456
+[rkyasan44@rhel-server testperm]$ chmod u+rwx 123
+[rkyasan44@rhel-server testperm]$ ls -ltr 123
+-rwxrw-r--. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+[rkyasan44@rhel-server testperm]$ chmod g+rwx 123
+[rkyasan44@rhel-server testperm]$ chmod g+rwx 123
+[rkyasan44@rhel-server testperm]$ ls -ltr 123
+-rwxrwxr--. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+[rkyasan44@rhel-server testperm]$ chmod o+rw 123
+[rkyasan44@rhel-server testperm]$ ls -ltr 123
+-rwxrwxrw-. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+[rkyasan44@rhel-server testperm]$ chmod o-rwx 123
+[rkyasan44@rhel-server testperm]$ ls -ltr 123
+-rwxrwx---. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+[rkyasan44@rhel-server testperm]$ chmod g+rwx 123
+[rkyasan44@rhel-server testperm]$ chmod g-rwx 123
+[rkyasan44@rhel-server testperm]$ ls -ltr 123
+-rwx------. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+[rkyasan44@rhel-server testperm]$ chmod u-rwx 123
+[rkyasan44@rhel-server testperm]$ ls -ltr 123
+----------. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+[rkyasan44@rhel-server testperm]$ cat 123
+cat: 123: Permission denied
+[rkyasan44@rhel-server testperm]$ ls -ltr 123
+----------. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+[rkyasan44@rhel-server testperm]$
+
+#******************** multiple users modificaiton *******************
+[root@rhel-server testperm]# ls -ltr
+total 0
+----------. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+drwxrwxr-x. 2 rkyasan44 rkyasan44 6 Oct 20 18:08 456
+[root@rhel-server testperm]# chmod u+rxw,g+rx 123
+[root@rhel-server testperm]# ls -ltr
+total 0
+-rwxr-x---. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+drwxrwxr-x. 2 rkyasan44 rkyasan44 6 Oct 20 18:08 456
+[root@rhel-server testperm]# chmod u+rxw,g+rx,o-rwx 123
+[root@rhel-server testperm]# ls -ltr
+total 0
+-rwxr-x---. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+drwxrwxr-x. 2 rkyasan44 rkyasan44 6 Oct 20 18:08 456
+[root@rhel-server testperm]# chmod u+rxw,g+rx,o+rwx 123
+[root@rhel-server testperm]# ls -ltr
+total 0
+-rwxr-xrwx. 1 rkyasan44 rkyasan44 0 Oct 20 18:08 123
+drwxrwxr-x. 2 rkyasan44 rkyasan44 6 Oct 20 18:08 456
+[root@rhel-server testperm]#
+
+****************************************  Permission at folder level (rx required to list and view content; r - only for list files)**************************(see below how it behaves)
+
+/*
+* read(r) - /dev
+* if we have only read permissino on directoties we can list content
+* - write (w) - we can modify the files and directories
+* - execute (x) - we can access directories
+*/
+
+[rkyasan44@rhel-server testperm]$ ls -ltr
+total 4
+-r--------. 1 rkyasan44 rkyasan44  6 Oct 20 18:16 123
+dr--------. 2 rkyasan44 rkyasan44 19 Oct 20 18:20 456
+[rkyasan44@rhel-server testperm]$ ls -ltr 456/
+ls: cannot access '456/1.txt': Permission denied
+total 0
+-????????? ? ? ? ?            ? 1.txt
+[rkyasan44@rhel-server testperm]$ pwd
+/home/rkyasan44/testperm
+[rkyasan44@rhel-server testperm]$ chmod u+w,u-r 456
+[rkyasan44@rhel-server testperm]$ ls -ltr 456/
+ls: cannot open directory '456/': Permission denied
+[rkyasan44@rhel-server testperm]$ chmod u+w,u+r 456
+[rkyasan44@rhel-server testperm]$ ls -ltr 456/
+ls: cannot access '456/1.txt': Permission denied
+total 0
+-????????? ? ? ? ?            ? 1.txt
+[rkyasan44@rhel-server testperm]$ chmod u+w,u+r,u+x 456
+[rkyasan44@rhel-server testperm]$ ls -ltr 456/
+total 4
+-rw-rw-r--. 1 rkyasan44 rkyasan44 12 Oct 20 18:20 1.txt
+[rkyasan44@rhel-server testperm]$
+
+
+
+
+
+
+
+
+
+
+
 
