@@ -1,1 +1,80 @@
+[admin@rhel-server ~]$ ls -a
+.  ..  .bash_logout  .bash_profile  .bashrc  .mozilla
+
+# .bash_profile -. this is the first file when user login into the system, the command and programs executed
+
+# .bash_logout -. this is the last file when user logout from system, the command and programs executed
+
+# .bashrc -> this is for default permissions of the user.
+
+
+#***********************************************  /etc/skel is the directory contains these files and copy these into home dirctory of user when new user is created ******
+
+[root@rhel-server ~]# cd /etc/skel
+[root@rhel-server skel]# ls -la
+total 24
+drwxr-xr-x.   3 root root   78 Oct  6 09:06 .
+drwxr-xr-x. 132 root root 8192 Oct 20 08:45 ..
+-rw-r--r--.   1 root root   18 Nov  5  2021 .bash_logout
+-rw-r--r--.   1 root root  141 Nov  5  2021 .bash_profile
+-rw-r--r--.   1 root root  492 Nov  5  2021 .bashrc
+drwxr-xr-x.   4 root root   39 Oct  6 09:06 .mozilla
+
+[root@rhel-server skel]# touch .customfile  #now want to add one more file into skel, so if new user created then this new file also gets copied.
+
+[root@rhel-server skel]# useradd ram123
+
+[root@rhel-server skel]# cd /home/ram999
+[root@rhel-server ram999]# ls -la
+total 12
+drwx------.  3 ram999 ram999  97 Oct 20 08:51 .
+drwxr-xr-x. 20 root   root   246 Oct 20 08:51 ..
+-rw-r--r--.  1 ram999 ram999  18 Nov  5  2021 .bash_logout
+-rw-r--r--.  1 ram999 ram999 141 Nov  5  2021 .bash_profile
+-rw-r--r--.  1 ram999 ram999 492 Nov  5  2021 .bashrc
+-rw-r--r--.  1 ram999 ram999   0 Oct 20 08:51 .customfile
+drwxr-xr-x.  4 ram999 ram999  39 Oct  6 09:06 .mozilla
+[root@rhel-server ram999]#
+
+
+# **************************************  modify the default behavior of user - admin ###########
+
+[root@rhel-server admin]# pwd
+/home/admin
+[root@rhel-server admin]# cat .bash_profile
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+# User specific environment and startup programs
+cd /tmp
+set name="hello welcome admin!"
+printf "$name\n\n"
+
+alias dt = 'date'
+[root@rhel-server admin]#
+
+Using username "admin".
+admin@192.168.1.8's password:
+Activate the web console with: systemctl enable --now cockpit.socket
+
+Register this system with Red Hat Insights: insights-client --register
+Create an account or view all your systems at https://red.ht/insights-dashboard
+Last login: Fri Oct 20 08:59:48 2023 from 192.168.1.2
+[admin@rhel-server ~]$ date
+Friday 20 October 2023 09:00:55 AM IST
+[admin@rhel-server ~]$ dt
+sh: dt: command not found...
+[admin@rhel-server ~]$ pwd
+/home/admin
+[admin@rhel-server ~]$
+
+
+
+
+
+
 
