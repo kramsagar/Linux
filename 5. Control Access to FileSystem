@@ -87,6 +87,80 @@ total 4
 -rw-rw-r--. 1 rkyasan44 rkyasan44 12 Oct 20 18:20 1.txt
 [rkyasan44@rhel-server testperm]$
 
+[rkyasan44@rhel-server testperm]$ ls -ltr
+total 4
+-r--------. 1 rkyasan44 rkyasan44  6 Oct 20 18:16 123
+dr--------. 2 rkyasan44 rkyasan44 19 Oct 20 18:20 456
+[rkyasan44@rhel-server testperm]$ cd 456    #**********************As it readonly at directory level, you can only read directory, but cannot list or read failed
+bash: cd: 456: Permission denied
+[rkyasan44@rhel-server testperm]$ chmod u+x 456  #**********************As it read&Exe at directory level, you can view directory and can read and list
+[rkyasan44@rhel-server testperm]$ ls -ltr
+total 4
+-r--------. 1 rkyasan44 rkyasan44  6 Oct 20 18:16 123
+dr-x------. 2 rkyasan44 rkyasan44 19 Oct 20 18:20 456
+[rkyasan44@rhel-server testperm]$ cd 456/
+[rkyasan44@rhel-server 456]$ ls -ltr
+total 4
+-rw-rw-r--. 1 rkyasan44 rkyasan44 12 Oct 20 18:29 1.txt 
+[rkyasan44@rhel-server 456]$ touch newfile  #**********************As write permission not there at folder level, hence new file creation failed
+touch: cannot touch 'newfile': Permission denied
+[rkyasan44@rhel-server 456]$
+
+/* Folder level
+* U -> rx -> 
+  view folder
+  list folder
+  read content inside folder
+* U -> rw ->
+  view folder
+  cannot list hence cannot create files inside directoy
+* U -> wx ->
+  can list files
+  create file possible.
+*/
+
+[rkyasan44@rhel-server testperm]$ cd 456
+[rkyasan44@rhel-server 456]$ ls -ltr
+ls: cannot open directory '.': Permission denied
+[rkyasan44@rhel-server 456]$ cd ..
+[rkyasan44@rhel-server testperm]$ ls -ltr
+total 4
+-r--------. 1 rkyasan44 rkyasan44  6 Oct 20 18:16 123
+d-wx------. 2 rkyasan44 rkyasan44 28 Oct 20 18:34 456
+[rkyasan44@rhel-server testperm]$ cd 456
+[rkyasan44@rhel-server 456]$ touch 123
+[rkyasan44@rhel-server 456]$ cat > 123
+dmdlmdl
+^C
+[rkyasan44@rhel-server 456]$ cat 123
+dmdlmdl
+[rkyasan44@rhel-server 456]$
+
+
+********************************* File level access ************************************
+/*
+read - read content file
+write - Modify the content
+execute - execute the file like script. otherwise no use.
+*/
+
+/*
+* special case (only write file): file has only W; then u can write a content; but append wont work as it needs to read the content.
+* rw - can write and also append.
+* only write new file -> W
+* append + write -> RW
+*/
+
+
+
+
+
+
+
+
+
+
+
 
 
 
