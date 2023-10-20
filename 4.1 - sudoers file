@@ -1,1 +1,111 @@
 
+## Sudoers allows particular users to run various commands as
+## the root user, without needing the root password.
+##
+## Examples are provided at the bottom of the file for collections
+## of related commands, which can then be delegated out to particular
+## users or groups.
+##
+## This file must be edited with the 'visudo' command.
+
+[root@rhel-server ~]# ls -ltr /etc/sudoers
+-r--r-----. 1 root root 4328 Aug 26  2021 /etc/sudoers
+[root@rhel-server ~]#
+
+############################################### Grant sudo to rkyasan44 ###########
+[root@rhel-server ~]# cat /etc/sudoers | grep rkyasan  #edit this file by entering command >visudo
+rkyasan44 ALL=(ALL)       ALL
+[root@rhel-server ~]#
+
+[rkyasan44@rhel-server ~]$ sudo -l  #below shows list of commands you have got access to.
+[sudo] password for rkyasan44:
+Matching Defaults entries for rkyasan44 on rhel-server:
+    !visiblepw, always_set_home, match_group_by_gid, always_query_group_plugin, env_reset, env_keep="COLORS DISPLAY HOSTNAME
+    HISTSIZE KDEDIR LS_COLORS", env_keep+="MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE", env_keep+="LC_COLLATE
+    LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES", env_keep+="LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE",
+    env_keep+="LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY", secure_path=/sbin\:/bin\:/usr/sbin\:/usr/bin
+
+User rkyasan44 may run the following commands on rhel-server:
+    (ALL) ALL
+[rkyasan44@rhel-server ~]$
+
+############################################### below shows example sudo given power ;to run commands on behalf of root
+[rkyasan44@rhel-server ~]$ passwd ram
+passwd: Only root can specify a user name.
+[rkyasan44@rhel-server ~]$ sudo passwd ram
+Changing password for user ram.
+New password:
+Retype new password:
+passwd: all authentication tokens updated successfully.
+[rkyasan44@rhel-server ~]$
+
+############################################### *** Allow only specific commands with sudo 
+Step1 -> find out command binary file
+Step2 -> enter those command binary full path in visudo editor
+
+[root@rhel-server ~]# cat /etc/sudoers | grep rkyasan
+rkyasan44 ALL=(ALL)     NOPASSWD:/usr/sbin/userdel,/usr/bin/passwd
+[root@rhel-server ~]#
+
+[rkyasan44@rhel-server ~]$ sudo -l
+Matching Defaults entries for rkyasan44 on rhel-server:
+    !visiblepw, always_set_home, match_group_by_gid, always_query_group_plugin, env_reset, env_keep="COLORS DISPLAY HOSTNAME
+    HISTSIZE KDEDIR LS_COLORS", env_keep+="MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE", env_keep+="LC_COLLATE
+    LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES", env_keep+="LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE",
+    env_keep+="LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY", secure_path=/sbin\:/bin\:/usr/sbin\:/usr/bin
+
+User rkyasan44 may run the following commands on rhel-server:
+    (ALL) NOPASSWD: /usr/sbin/userdel, /usr/bin/passwd
+[rkyasan44@rhel-server ~]$
+
+[rkyasan44@rhel-server ~]$ tail -2 /etc/passwd
+ram789:x:1715:1715::/home/ram789:/bin/bash
+ram3:x:1716:1720::/home/ram3:/bin/bash
+[rkyasan44@rhel-server ~]$ userdel ram3
+userdel: Permission denied.
+userdel: cannot lock /etc/passwd; try again later.
+[rkyasan44@rhel-server ~]$ sudo userdel ram3
+[rkyasan44@rhel-server ~]$
+
+#onboard a user in a host:
+#username- admin
+#uid- 3110
+#gid- opstream
+#secondary - wheel
+#comment - administrator
+#home directory - /home/admin-user
+#shell - /bin/sh
+
+[root@rhel-server ~]# groupadd opstream
+[root@rhel-server ~]# useradd -u 3111 -g opstream -G wheel -c administrator -d /home/admin-user -s /bin/sh admin1
+[root@rhel-server ~]# ls -ld /home/admin-user/
+drwx------. 3 admin1 opstream 78 Oct 20 08:36 /home/admin-user/
+[root@rhel-server ~]# id admin1
+uid=3111(admin1) gid=1723(opstream) groups=1723(opstream),10(wheel)
+[root@rhel-server ~]#******************************************** By default users part of wheel secondary group gets sudo privilege *****
+
+[root@rhel-server ~]# grep admin1 /etc/sudoers  #no entry of this user in the sudoers file , but still user obtained the sudo privilege
+[root@rhel-server ~]#
+
+[admin1@rhel-server usr1]$ grep ram123 /etc/passwd
+ram123:x:1713:1713::/home/ram123:/bin/bash
+[admin1@rhel-server usr1]$ sudo userdel ram123
+[admin1@rhel-server usr1]$ grep ram123 /etc/passwd
+[admin1@rhel-server usr1]$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
