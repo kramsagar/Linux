@@ -151,6 +151,48 @@ execute - execute the file like script. otherwise no use.
 * append + write -> RW
 */
 
+[rkyasan44@rhel-server 456]$ ls -ltr 1.txt
+-rw-rw-r--. 1 rkyasan44 rkyasan44 5 Oct 21 09:36 1.txt
+[rkyasan44@rhel-server 456]$ ./1.txt
+bash: ./1.txt: Permission denied
+[rkyasan44@rhel-server 456]$ sh 1.txt
+Saturday 21 October 2023 09:36:52 AM IST
+[rkyasan44@rhel-server 456]$
+
+#content was overrid due to read permission was lost and only write is avalable on the file. it doesnt know history of data, hence it override the content
+[rkyasan44@rhel-server 456]$ cat 1.txt
+dlmdmldld
+next line append
+[rkyasan44@rhel-server 456]$ chmod u-r 1.txt
+[rkyasan44@rhel-server 456]$ ls -ltr 1.txt
+--w-rw-r--. 1 rkyasan44 rkyasan44 27 Oct 21 09:39 1.txt
+[rkyasan44@rhel-server 456]$ cat > 1.txt
+new line again
+^C
+[rkyasan44@rhel-server 456]$ cat >> 1.txt
+one more new line again
+^C
+[rkyasan44@rhel-server 456]$ chmod u+r 1.txt
+[rkyasan44@rhel-server 456]$ cat 1.txt
+new line again
+one more new line again
+[rkyasan44@rhel-server 456]$
+
+####################################  changing permission of the file with oxa #########
+[rkyasan44@rhel-server testperm]$ chmod 400 1.txt
+[rkyasan44@rhel-server testperm]$ ls -ltr 1.txt
+-r--------. 1 rkyasan44 rkyasan44 0 Oct 21 10:01 1.txt
+[rkyasan44@rhel-server testperm]$ chmod 450 1.txt
+[rkyasan44@rhel-server testperm]$ ls -ltr 1.txt
+-r--r-x---. 1 rkyasan44 rkyasan44 0 Oct 21 10:01 1.txt
+[rkyasan44@rhel-server testperm]$ chmod 453 1.txt
+[rkyasan44@rhel-server testperm]$ ls -ltr 1.txt
+-r--r-x-wx. 1 rkyasan44 rkyasan44 0 Oct 21 10:01 1.txt
+[rkyasan44@rhel-server testperm]$ chmod 253 1.txt
+[rkyasan44@rhel-server testperm]$ ls -ltr 1.txt
+--w-r-x-wx. 1 rkyasan44 rkyasan44 0 Oct 21 10:01 1.txt
+[rkyasan44@rhel-server testperm]$
+
 
 
 
