@@ -1,1 +1,31 @@
+/*Special permission:
+* 1.	Set uid
+* 2.	Set gid
+* 3.	Sticky bit
+*/
+
+>>>>>>>>>>>>>>>> Sticky bit
+================================================================================================================================================
+
+######################################### even though rkyasan44 is owner of the folder, other user ram2 was able to delete files inside directory ######
+bash-5.1$ whoami
+ram2
+
+bash-5.1$ ls -ld /tmp/123full/
+drwxrwxrwx. 2 rkyasan44 rkyasan44 42 Oct 21 10:21 /tmp/123full/
+bash-5.1$ ls -ltr /tmp/123full/
+total 0
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 21 10:21 2
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 21 10:21 1
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 21 10:21 4
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 21 10:21 3
+
+bash-5.1$ rm -rf /tmp/123full/[1-2]
+bash-5.1$ ls -ltr /tmp/123full/
+total 0
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 21 10:21 4
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 21 10:21 3
+bash-5.1$
+
+##################################### how to save from above situation (*******STICKY BIT *******)  ##################################### 
 
