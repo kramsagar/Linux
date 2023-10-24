@@ -1,7 +1,7 @@
 /*Special permission:
-* 1.	Set uid
-* 2.	Set gid
-* 3.	Sticky bit
+* 1.	Set uid -  chmod u+s - if u want to restrict the users to su to the file system/user account, then remove s , like su to root.
+* 2.	Set gid -> (chomod g+s /d) - persist the group perm of folder to files inside directory
+* 3.	Sticky bit  -> sticky bit only for folder level.  (chmod o+t /d)  - dont let others to modify/delete files even though others have write access
 */
 
 >>>>>>>>>>>>>>>> Sticky bit
@@ -27,5 +27,102 @@ total 0
 -rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 21 10:21 3
 bash-5.1$
 
-##################################### how to save from above situation (*******STICKY BIT *******)  ##################################### 
+##################################### how to save from above situation (*******STICKY BIT *******)   (chmod o+t )   ##################################### 
+Summary: if you dont want to allow others to remove you owned files even though others has write access, then use sticky bit.
+
+
+[rkyasan44@rhel-server sticky]$ ls -ld /tmp/sticky/
+drwxrwxrwx. 2 rkyasan44 rkyasan44 32 Oct 24 09:15 /tmp/sticky/
+[rkyasan44@rhel-server sticky]$ chmod o+t /tmp/sticky/               
+[rkyasan44@rhel-server sticky]$ ls -ld /tmp/sticky/
+drwxrwxrwt. 2 rkyasan44 rkyasan44 32 Oct 24 09:15 /tmp/sticky/
+[rkyasan44@rhel-server sticky]$ ls -ltr
+total 8
+-rw-rw-r--. 1 rkyasan44 rkyasan44 26 Oct 24 09:12 file3
+-rw-rw-r--. 1 rkyasan44 rkyasan44 26 Oct 24 09:12 file2
+
+-------->
+bash-5.1$ whoami
+ram2
+bash-5.1$
+bash-5.1$ ls -ltr
+total 8
+-rw-rw-r--. 1 rkyasan44 rkyasan44 26 Oct 24 09:12 file3
+-rw-rw-r--. 1 rkyasan44 rkyasan44 26 Oct 24 09:12 file2
+bash-5.1$ touch file1byram; echo 'file of ram' > file1byram;
+bash-5.1$ rm file2
+rm: remove write-protected regular file 'file2'? y
+rm: cannot remove 'file2': Operation not permitted
+-------->
+
+[rkyasan44@rhel-server sticky]$ chmod o-t /tmp/sticky/
+[rkyasan44@rhel-server sticky]$ ls -ld /tmp/sticky/
+drwxrwxrwx. 2 rkyasan44 rkyasan44 50 Oct 24 09:16 /tmp/sticky/
+[rkyasan44@rhel-server sticky]$
+
+---------->
+bash-5.1$ rm file2
+rm: remove write-protected regular file 'file2'? y
+bash-5.1$ ls -ltr
+total 12
+-rw-rw-r--. 1 rkyasan44 rkyasan44 26 Oct 24 09:12 file3
+-rw-r--r--. 1 ram2      ram2      12 Oct 24 09:16 file1byram
+-rw-r--r--. 1 ram2      ram2      12 Oct 24 09:17 file1byram1
+
+=============================================================== gid bit at group level (chomod g+s ) =============== 
+Summary: i want to persist the group permissions to folder files also and file create should influence group owner or file owner.
+
+[rkyasan44@rhel-server fold]$ ls -ld /tmp/fold/
+drwxrwxr-x. 2 rkyasan44 devops 6 Oct 24 09:49 /tmp/fold/
+[rkyasan44@rhel-server fold]$ cd /tmp/fold/
+[rkyasan44@rhel-server fold]$ touch file{1..3}
+[rkyasan44@rhel-server fold]$ ls -ltr
+total 0
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 24 09:50 file3
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 24 09:50 file2
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 24 09:50 file1
+[rkyasan44@rhel-server fold]$ chmod g+s /tmp/fold/
+[rkyasan44@rhel-server fold]$ pwd
+/tmp/fold
+[rkyasan44@rhel-server fold]$ ls -ld /tmp/fold/
+drwxrwsr-x. 2 rkyasan44 devops 45 Oct 24 09:50 /tmp/fold/
+[rkyasan44@rhel-server fold]$ pwd
+/tmp/fold
+[rkyasan44@rhel-server fold]$ touch file{4..6}
+[rkyasan44@rhel-server fold]$ ls -ltr
+total 0
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 24 09:50 file3
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 24 09:50 file2
+-rw-rw-r--. 1 rkyasan44 rkyasan44 0 Oct 24 09:50 file1
+-rw-rw-r--. 1 rkyasan44 devops    0 Oct 24 09:50 file6
+-rw-rw-r--. 1 rkyasan44 devops    0 Oct 24 09:50 file5
+-rw-rw-r--. 1 rkyasan44 devops    0 Oct 24 09:50 file4
+[rkyasan44@rhel-server fold]$
+
+
+=============================================================== uid bit at group level (chomod u+s ) =============== 
+Summary->  if u want to restrict the users to su to the file system/user account, then remove s , like su to root.
+
+[root@rhel-server fold]# ls -ltr /usr/bin/su
+-rwsr-xr-x. 1 root root 57616 Feb 24  2022 /usr/bin/su
+
+            [usr1@rhel-server ansible]$ su -
+            Password:
+            [root@rhel-server ~]# exit
+            logout
+
+[root@rhel-server fold]# chmod u-s /usr/bin/su
+[root@rhel-server fold]# ls -ltr /usr/bin/su
+-rwxr-xr-x. 1 root root 57616 Feb 24  2022 /usr/bin/su
+
+            [usr1@rhel-server ansible]$ su -
+            Password:
+            su: Authentication failure
+            [usr1@rhel-server ansible]$
+
+[root@rhel-server fold]#
+
+
+
+
 
