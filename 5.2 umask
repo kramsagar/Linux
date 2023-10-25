@@ -1,1 +1,77 @@
+Umask:
+By default when you created a file it comes up with some permissions. Who give that and why 755 pemrission by default sometime, why not 777?
+This is deriving by umask value. Note- by default kernel try to provide 777 permissions for directories and 666 for files.
+
+default umask nature:
+----------------------
+[usr1@rhel-server ~]$ umask
+0002
+[usr1@rhel-server ~]$ grep umask .bashrc
+[usr1@rhel-server ~]$ umask -S
+u=rwx,g=rwx,o=rx
+[usr1@rhel-server ~]$ mkdir newdir;ls -ld newdir;
+drwxrwxr-x. 2 usr1 usr1 6 Oct 25 10:57 newdir
+[usr1@rhel-server ~]$
+
+update umask permanently (editing user sepcfic bashrc file)
+----------------------------------------------------------------------------------------
+[rkyasan44@rhel-server ~]$ umask
+0022
+
+    [rkyasan44@rhel-server ~]$ vi .bashrc
+    > enter umask 022
+    [rkyasan44@rhel-server ~]$ source .bashrc
+
+[rkyasan44@rhel-server ~]$ grep umask .bashrc  (added one line as > umask 022 )
+umask 022
+[rkyasan44@rhel-server ~]$ umask -S
+u=rwx,g=rx,o=rx
+[rkyasan44@rhel-server ~]$ mkdir newdir;ls -ld newdir;
+drwxr-xr-x. 2 rkyasan44 rkyasan44 6 Oct 25 10:57 newdir
+
+update umask temporarly 
+----------------------------------------------------------------------------------------
+[usr1@rhel-server ~]$ umask 022
+[usr1@rhel-server ~]$ umask
+0022
+[usr1@rhel-server ~]$ mkdir newdir1;ls -ld newdir1;
+drwxr-xr-x. 2 usr1 usr1 6 Oct 25 11:01 newdir1
+[usr1@rhel-server ~]$
+
+After switch or logoff will loose this umask. as this is temporarly set.
+            [usr1@rhel-server ~]$ su -
+            Password:
+            [root@rhel-server ~]# su usr1
+            [usr1@rhel-server root]$ cd ~
+            [usr1@rhel-server ~]$ umask
+            0002
+            [usr1@rhel-server ~]$
+
+
+umask derive for any user y default from (/etc/bashrc file)
+----------------------------------------------------------------------------------------
+    # By default, we want umask to get set. This sets it for non-login shell.
+    # Current threshold for system reserved uid/gids is 200
+    # You could check uidgid reservation validity in
+    # /usr/share/doc/setup-*/uidgid file
+    if [ $UID -gt 199 ] && [ "`/usr/bin/id -gn`" = "`/usr/bin/id -un`" ]; then
+       umask 002
+    else
+       umask 022
+    fi
+
+              [usr1@rhel-server ~]$ su -
+              Password:
+              [root@rhel-server ~]# mkdir r1; ls -ld r1;
+              drwxr-xr-x. 2 root root 6 Oct 25 11:04 r1
+              [root@rhel-server ~]# umask  #<<<<<<<<<<<<<<<<<<<<<<<<<<------------------------------------
+              0022
+              [root@rhel-server ~]# su usr2
+              [usr2@rhel-server root]$ cd ~
+              [usr2@rhel-server ~]$ umask  #<<<<<<<<<<<<<<<<<<<<<<<<<<------------------------------------
+              0002
+              [usr2@rhel-server ~]$ mkdir r2;ls -ld r2;
+              drwxrwxr-x. 2 usr2 usr2 6 Oct 25 11:06 r2
+              [usr2@rhel-server ~]$
+
 
