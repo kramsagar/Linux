@@ -197,6 +197,39 @@ openssh-server.x86_64 : An open source SSH server daemon
 [root@localhost yum.repos.d]#
 
 
+######################### More info about package
+
+[root@localhost yum.repos.d]# yum info httpd
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+Last metadata expiration check: 1:05:24 ago on Thu 26 Oct 2023 10:31:48 PM IST.
+Available Packages
+Name         : httpd
+Version      : 2.4.51
+Release      : 7.el9_0
+Architecture : x86_64
+Size         : 1.5 M
+Source       : httpd-2.4.51-7.el9_0.src.rpm
+Repository   : apprepo-packages
+Summary      : Apache HTTP Server
+URL          : https://httpd.apache.org/
+License      : ASL 2.0
+Description  : The Apache HTTP Server is a powerful, efficient, and extensible
+             : web server.
+
+
+
+############ How to verify certain package installed or not #
+
+[root@localhost yum.repos.d]# rpm -iq vsftpd
+vsftpd-3.0.3-49.el9.x86_64
+[root@localhost yum.repos.d]# rpm -iq ansible
+package ansible is not installed
+[root@localhost yum.repos.d]#
+
 
 
 
