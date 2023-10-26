@@ -1,0 +1,24 @@
+[root@rhel-server ~]# cd /etc/motd.d/
+[root@rhel-server motd.d]# pwd
+/etc/motd.d
+[root@rhel-server motd.d]# ls -ltr
+total 0
+lrwxrwxrwx. 1 root root 41 Oct  6 09:08 insights-client -> /etc/insights-client/insights-client.motd
+lrwxrwxrwx. 1 root root 22 Oct  6 09:10 cockpit -> ../../run/cockpit/motd
+[root@rhel-server motd.d]# vi welcome.txt
+[root@rhel-server motd.d]# vi welcome.txt
+[root@rhel-server motd.d]# vi welcome.txt
+[root@rhel-server motd.d]# cat welcome.txt
+hi
+Wlecome to redhat account..
+[root@rhel-server motd.d]#
+
+Using username "rkyasan44".
+rkyasan44@192.168.1.8's password:
+Register this system with Red Hat Insights: insights-client --register
+Create an account or view all your systems at https://red.ht/insights-dashboard
+hi
+Wlecome to redhat account..
+Last login: Thu Oct 26 08:26:20 2023 from 192.168.1.2
+[rkyasan44@rhel-server ~]$
+
