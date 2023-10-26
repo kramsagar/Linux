@@ -29,3 +29,38 @@ Wlecome to redhat account..
 Last login: Thu Oct 26 08:26:20 2023 from 192.168.1.2
 [rkyasan44@rhel-server ~]$
 
+
+
+##############################################  Multiple welcome note files 
+
+[root@rhel-server motd.d]# ls -ltr
+total 8
+lrwxrwxrwx. 1 root root  41 Oct  6 09:08 insights-client -> /etc/insights-client/insights-client.motd
+lrwxrwxrwx. 1 root root  22 Oct  6 09:10 cockpit -> ../../run/cockpit/motd
+-rw-r--r--. 1 root root 122 Oct 26 08:31 note.tx
+-rw-r--r--. 1 root root 115 Oct 26 08:31 welcome.txt
+[root@rhel-server motd.d]#
+
+
+
+Using username "rkyasan44".
+rkyasan44@192.168.1.8's password:
+Register this system with Red Hat Insights: insights-client --register
+Create an account or view all your systems at https://red.ht/insights-dashboard
+*****************************************
+this is from note.txt welcome message
+*****************************************
+****************************************
+hi
+Wlecome to redhat account.
+*******************************************
+Last failed login: Thu Oct 26 08:32:14 IST 2023 from 192.168.1.2 on ssh:notty
+There was 1 failed login attempt since the last successful login.
+Last login: Thu Oct 26 08:27:17 2023 from 192.168.1.2
+[rkyasan44@rhel-server ~]$
+
+
+
+
+
+
