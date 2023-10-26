@@ -1,3 +1,6 @@
+Note: This steps to modify x server, so that when you connect to x server you will see this new banner instead of default.
+
+
 [root@rhel-server ~]# cd /etc/motd.d/
 [root@rhel-server motd.d]# pwd
 /etc/motd.d
@@ -12,6 +15,10 @@ lrwxrwxrwx. 1 root root 22 Oct  6 09:10 cockpit -> ../../run/cockpit/motd
 hi
 Wlecome to redhat account..
 [root@rhel-server motd.d]#
+
+[root@rhel-server motd.d]# systemctl reload-or-restart sshd
+[root@rhel-server motd.d]#
+
 
 Using username "rkyasan44".
 rkyasan44@192.168.1.8's password:
