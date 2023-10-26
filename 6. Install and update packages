@@ -1,1 +1,227 @@
+In redhat os to install software’s we need to package. To get these package, there to approach – 
+1.	Purchase subscription (basic, standard, premium) 
+2.	Setup repositories
+a.	Local repo
+b.	Remote repo
+
+All packages stored in repository folder. The package is nothing but a bundle of software. This package contains code, dep, binaries, lib, scripts etc.,,
+Ex: apache package name is nothing but httpd
+ Operations on packages - 
+1.	Install
+2.	Remove
+3.	Update
+
+Utilities to use for package management:
+1.	Yum
+2.	Dnf
+
+ISO file: by default inside iso file has all the installation dependencies and also it has repositories also.
+1.	AppStream – it contains all application related packages. Need basis will install these. Like httpd, vsfp, haproxy, ansible etc., all these are not necessary for running system, only we install on need basis.
+2.	BaseOS – necessary package to run the system. Like openssh,chrony,cronie,firewalld
+
+
+url based remote repo
+------------------------
+1.	If you want package, you can attach iso image to vm machine as external media controle storage.
+2.	But you can do this for all machine in enterprise level. Hecne we can create one such machine and expose it as http repo, and then link the repo to all nodes in our enterprise.
+So that we can avoid attaching iso for all vm
+3.	But if in case http repo is down, then all vm cannot download package, so we always need to run this http based repo machine
+
+
+Steps to attach repo:
+---------------------
+1.	Attach the ISO file when system is running state
+2.	Open vm and check below additional mount added or not
+3.	We cannot use /run mediate as repo, because the storage at run changes for every reboot. So lets copy some repo folders to local.
+
+
+[root@localhost repositories]# lsblk
+NAME          MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda             8:0    0   80G  0 disk
+├─sda1          8:1    0    1G  0 part /boot
+└─sda2          8:2    0   79G  0 part
+  ├─rhel-root 253:0    0 50.4G  0 lvm  /
+  ├─rhel-swap 253:1    0  3.9G  0 lvm  [SWAP]
+  └─rhel-home 253:2    0 24.6G  0 lvm  /home
+sr0            11:0    1  7.9G  0 rom  /run/media/rkyasan44/RHEL-9-0-0-BaseOS-x86_64
+
+
+[root@localhost repositories]# mkdir repositories
+[root@localhost repositories]# cd /run/media/rkyasan44/RHEL-9-0-0-BaseOS-x86_64
+[root@localhost repositories]# cp -r BaseOS/ /repositories/
+[root@localhost repositories]# cp -r AppStream/ /repositories/
+[root@localhost repositories]# cp RPM-GPG-KEY-redhat-release /repositories/
+[root@localhost repositories]# ls -ltr
+total 4
+dr-xr-xr-x. 4 root root   38 Oct 26 10:46 BaseOS
+dr-xr-xr-x. 4 root root   38 Oct 26 10:47 AppStream
+-r--r--r--. 1 root root 3682 Oct 26 21:14 RPM-GPG-KEY-redhat-release
+[root@localhost repositories]#
+
+#RPM-GPG-KEY-redhat-release  -> this is the public key use for appstream and baseos repositories
+
+Configure repositories
+------------------------
+
+[root@localhost repositories]# cd /etc/yum
+yum/         yum.repos.d/
+[root@localhost repositories]# cd /etc/yum.repos.d/
+[root@localhost yum.repos.d]# ls -ltr
+total 4
+-rw-r--r--. 1 root root 358 Oct 26 10:45 redhat.repo
+
+[root@localhost yum.repos.d]# vi redhat1.repo
+[root@localhost yum.repos.d]# ls -ltr
+total 8
+-rw-r--r--. 1 root root 358 Oct 26 10:45 redhat.repo
+-rw-r--r--. 1 root root  99 Oct 26 21:36 redhat1.repo
+
+          [root@localhost yum.repos.d]# cat redhat1.repo
+          [basic-application-packages]
+          name=baseos-repo
+          baseurl=file:///repositories/BaseOS/
+          gpgcheck=0
+          enabled=1
+
+
+/*
+There are two type of repo ->
+url = file:// -> refers to local filesystem packages
+url = http:// -> refers to web url filesystem packages
+gpgcheck -> 0  (dont verify with public key) ; 1 - verify against gpg public key
+enabled -> 0 ( dont enable repo) ; 1 - > enable repo
+*/
+
+[root@localhost yum.repos.d]# yum repolist all
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+repo id                                                              repo name                                             status
+basic-application-packages                                           baseos-repo                                           disabled
+[root@localhost yum.repos.d]#
+
+[root@localhost yum.repos.d]# yum install openssh
+Updating Subscription Management repositories.
+Unable to read consumer identity
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+Error: There are no enabled repositories in "/etc/yum.repos.d", "/etc/yum/repos.d", "/etc/distro.repos.d".
+
+
+#modify the enabled property to 1
+--------------------------------------------
+
+[root@localhost yum.repos.d]# yum repolist all
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+repo id                                                              repo name                                              status
+basic-application-packages                                           baseos-repo                                            enabled
+[root@localhost yum.repos.d]#
+
+[root@localhost yum.repos.d]# yum install openssh
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+baseos-repo                                                                                         33 MB/s | 1.7 MB     00:00
+Last metadata expiration check: 0:00:01 ago on Thu 26 Oct 2023 09:45:14 PM IST.
+Package openssh-8.7p1-8.el9.x86_64 is already installed.
+Dependencies resolved.
+Nothing to do.
+Complete!
+
+################################### search and list ####################
+[root@localhost yum.repos.d]# yum list
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+Last metadata expiration check: 0:04:58 ago on Thu 26 Oct 2023 09:45:14 PM IST.
+Installed Packages
+ModemManager.x86_64                                          1.18.2-3.el9                                @anaconda
+ModemManager-glib.x86_64                                     1.18.2-3.el9                                @anaconda
+NetworkManager.x86_64                                        1:1.36.0-4.el9_0                            @anaconda
+NetworkManager-adsl.x86_64                                   1:1.36.0-4.el9_0                            @anaconda
+NetworkManager-bluetooth.x86_64                              1:1.36.0-4.el9_0                            @anaconda
+NetworkManager-config-server.noarch                          1:1.36.0-4.el9_0                            @anaconda
+
+
+###################################### Add multiple local repo ##############
+[root@localhost yum.repos.d]# cat redhat1.repo
+[basic-application-packages]
+name=baseos-repo
+baseurl=file:///repositories/BaseOS/
+gpgcheck=0
+enabled=1
+
+[apprepo-packages]
+name=apppackages-repo
+baseurl=file:///repositories/AppStream
+gpgcheck=1
+gpgkey=file:///repositories/RPM-GPG-KEY-redhat-release
+enabled=1
+
+[root@localhost yum.repos.d]# yum repolist all
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+repo id                                                            repo name                                                status
+apprepo-packages                                                   apppackages-repo                                         enabled
+basic-application-packages                                         baseos-repo                                              enabled
+
+
+[root@localhost yum.repos.d]# yum search openssh
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+apppackages-repo                                                                                    75 MB/s | 5.8 MB     00:00
+Last metadata expiration check: 0:00:01 ago on Thu 26 Oct 2023 09:54:20 PM IST.
+================================================== Name Exactly Matched: openssh ==================================================
+openssh.x86_64 : An open source implementation of SSH protocol version 2
+================================================= Name & Summary Matched: openssh =================================================
+openssh-askpass.x86_64 : A passphrase dialog for OpenSSH and X
+openssh-keycat.x86_64 : A mls keycat backend for openssh
+====================================================== Name Matched: openssh ======================================================
+openssh-clients.x86_64 : An open source SSH client applications
+openssh-server.x86_64 : An open source SSH server daemon
+[root@localhost yum.repos.d]#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
