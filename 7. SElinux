@@ -1,7 +1,142 @@
-Find out SELinux mode?
+##### Find out SELinux mode?
 
         [rkyasan44@rhel-server ~]$ getenforce
         Enforcing
         [rkyasan44@rhel-server ~]$
+
+##### Start a web server?
+
+        [root@localhost html]# pwd
+        /var/www/html
+
+        [root@localhost html]# cat index.html
+        Hello welcome to apache http web serverwq
+        
+        [root@localhost html]# systemctl start  httpd
+        
+        [root@localhost html]# curl http://localhost:80/
+        Hello welcome to apache http web serverwq
+        [root@localhost html]#
+        
+#### What will happen when trying to access from outside / web browser ?
+
+        C:\Users\Dell>curl -v http://192.168.1.9:80/
+        *   Trying 192.168.1.9:80...
+        * connect to 192.168.1.9 port 80 failed: Timed out
+        * Failed to connect to 192.168.1.9 port 80 after 21004 ms: Couldn't connect to server
+        * Closing connection 0
+        curl: (28) Failed to connect to 192.168.1.9 port 80 after 21004 ms: Couldn't connect to server
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### Now review Firewall settings:
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Step1 : Verify Firewall service is running or not.
+--------------------------------------------------------------------------------------------------------------------
+[root@localhost firewalld]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+     Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sun 2023-10-29 18:13:53 IST; 20min ago
+       Docs: man:firewalld(1)
+   Main PID: 833 (firewalld)
+      Tasks: 4 (limit: 23440)
+     Memory: 44.6M
+        CPU: 1.199s
+     CGroup: /system.slice/firewalld.service
+             └─833 /usr/bin/python3 -s /usr/sbin/firewalld --nofork --nopid
+
+Oct 29 18:13:52 localhost systemd[1]: Starting firewalld - dynamic firewall daemon...
+Oct 29 18:13:53 localhost systemd[1]: Started firewalld - dynamic firewall daemon.
+[root@localhost firewalld]#
+--------------------------------------------------------------------------------------------------------------------
+Step2: Review all configurations of firewall-cmd
+--------------------------------------------------------------------------------------------------------------------
+        [root@localhost firewalld]# firewall-cmd --list-all
+        public (active)
+          target: default
+          icmp-block-inversion: no
+          interfaces: enp0s3 enp0s8
+          sources:
+          services: cockpit dhcpv6-client ssh
+          ports:
+          protocols:
+          forward: yes
+          masquerade: no
+          forward-ports:
+          source-ports:
+          icmp-blocks:
+          rich rules:
+        [root@localhost firewalld]#
+
+note: Now if you look at above services "http" is not part of the list. hence firewall is refusing the http traffic.
+
+-----------------------------------------------------------------------------------------------------------------------------
+Step3: Lets update services "http" to allow traffic
+-----------------------------------------------------------------------------------------------------------------------------
+        [root@localhost firewalld]# firewall-cmd --permanent --add-service=http
+        success
+        [root@localhost firewalld]#
+        
+        [root@localhost firewalld]# firewall-cmd --reload
+        success
+        [root@localhost firewalld]#
+        
+        [root@localhost firewalld]# firewall-cmd --list-all
+        public (active)
+          target: default
+          icmp-block-inversion: no
+          interfaces: enp0s3 enp0s8
+          sources:
+          services: cockpit dhcpv6-client http ssh
+          ports:
+          protocols:
+          forward: yes
+          masquerade: no
+          forward-ports:
+          source-ports:
+          icmp-blocks:
+          rich rules:
+        [root@localhost firewalld]#
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+Step4: Now try to access http url from outside browser
+-----------------------------------------------------------------------------------------------------------------------------
+
+C:\Users\Dell>curl -v http://192.168.1.9:80/
+*   Trying 192.168.1.9:80...
+* Connected to 192.168.1.9 (192.168.1.9) port 80 (#0)
+> GET / HTTP/1.1
+> Host: 192.168.1.9
+> User-Agent: curl/8.0.1
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< Date: Sun, 29 Oct 2023 13:01:51 GMT
+< Server: Apache/2.4.51 (Red Hat Enterprise Linux)
+< Last-Modified: Sun, 29 Oct 2023 12:47:19 GMT
+< ETag: "2c-608da52786766"
+< Accept-Ranges: bytes
+< Content-Length: 44
+< Content-Type: text/html; charset=UTF-8
+<
+Hello welcome to apache http web serverwq
+* Connection #0 to host 192.168.1.9 left intact
+
+C:\Users\Dell>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
