@@ -1,1 +1,13 @@
+>>> We have 3 types of modes in SELinux?
+1.	enforcing
+2.	permissive
+3.	disabled
+
+>>> To "disable" firewall "permanently"?
+You can do it via config file modification.
+
+>>> To change it "tempory" or "permanently" via "Command line" ? only modes can be done
+  a. enforcing
+  b. permissive
+
 
