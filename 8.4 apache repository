@@ -1,1 +1,45 @@
 
+[root@localhost /]# ls -ldZ /repositories/
+drwxr-xr-x. 4 root root unconfined_u:object_r:default_t:s0 71 Oct 26 21:14 /repositories/
+
+[root@localhost /]# semanage fcontext -a -t httpd_sys_content_t "/repositories(/.*)?"
+
+[root@localhost /]# restorecon -R -v /repositories/
+....
+to unconfined_u:object_r:httpd_sys_content_t:s0
+Relabeled /repositories/AppStream/Packages/texlive-tex-ini-files-20200406-25.el9.noarch.rpm from unconfined_u:object_r:default_t:s0 to unconfined_u:object_r:httpd_sys_content_t:s0
+Relabeled /repositories/AppStream/Packages/texlive-tex4ht-20200406-25.el9.x86_64.rpm from unconfined_u:object_r:default_t:s0 to unconfined_u:object_r:httpd_sys_content_t:s0
+Relabeled /repositories/AppStream/Packages/texlive-texlive-common-doc-20200406-25.el9.noarch.rpm from unconfined_u:object_r:default_t:s0 to unconfined_u:object_r:httpd_sys_content_t:s0
+Relabeled /repositories/AppStream/Packages/texlive-texlive-docindex-20200406-25.el9.noarch.rpm from unconfined_u:object_r:default_t:s0 to unconfined_u:object_r:httpd_sys_content_t:s0
+Relabeled /repositories/AppStream/Packages/texlive-texlive-en-20200406-25.el9.noarch.rpm from unconfined_u:object_r:default_t:s0 to unconfined_u:object_r:httpd_sys_content_t:s0
+Relabeled /repositories/AppStream/Packages/texlive-texlive-msg-translations-20200406-25.el9.noarch.rpm from unconfined_u:object_r:default_t:s0 to unconfined_u:object_r:httpd_sys_cont
+....
+
+[root@localhost /]# ls -ldZ /repositories/
+drwxr-xr-x. 4 root root unconfined_u:object_r:httpd_sys_content_t:s0 71 Oct 26 21:14 /repositories/
+[root@localhost /]#
+
+C:\Users\Dell>curl http://192.168.1.9/repositories/
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /repositories</title>
+ </head>
+ <body>
+<h1>Index of /repositories</h1>
+  <table>
+   <tr><th valign="top"><img src="/icons/blank.gif" alt="[ICO]"></th><th><a href="?C=N;O=D">Name</a></th><th><a href="?C=M;O=A">Last modified</a></th><th><a href="?C=S;O=A">Size</a></th><th><a href="?C=D;O=A">Description</a></th></tr>
+   <tr><th colspan="5"><hr></th></tr>
+<tr><td valign="top"><img src="/icons/back.gif" alt="[PARENTDIR]"></td><td><a href="/">Parent Directory</a>       </td><td>&nbsp;</td><td align="right">  - </td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/folder.gif" alt="[DIR]"></td><td><a href="AppStream/">AppStream/</a>             </td><td align="right">2023-10-26 10:47  </td><td align="right">  - </td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/folder.gif" alt="[DIR]"></td><td><a href="BaseOS/">BaseOS/</a>                </td><td align="right">2023-10-26 10:46  </td><td align="right">  - </td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/text.gif" alt="[TXT]"></td><td><a href="RPM-GPG-KEY-redhat-release">RPM-GPG-KEY-redhat-r..&gt;</a></td><td align="right">2023-10-26 21:14  </td><td align="right">3.6K</td><td>&nbsp;</td></tr>
+   <tr><th colspan="5"><hr></th></tr>
+</table>
+</body></html>
+
+C:\Users\Dell>
+
+
+
+
