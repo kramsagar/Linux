@@ -1,0 +1,129 @@
+
+[root@localhost /]# ls -ltrZ /var/www/html/index.html
+-rw-r--r--. 1 root root unconfined_u:object_r:httpd_sys_content_t:s0 34 Oct 29 19:26 /var/www/html/index.html
+[root@localhost /]# ls -ltrZ /var/www/html/webserver/index.html
+-rw-r--r--. 1 root root unconfined_u:object_r:user_home_t:s0 61 Oct 29 18:59 /var/www/html/webserver/index.html
+[root@localhost /]#
+
+>>>>>>>> if you review above the user context in above files is different. Lets review how the firewall react to it.
+
+C:\Users\Dell>curl http://192.168.1.9:80/
+hello html page under html folder
+
+C:\Users\Dell>curl http://192.168.1.9:80/webserver/
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>403 Forbidden</title>
+</head><body>
+<h1>Forbidden</h1>
+<p>You don't have permission to access this resource.</p>
+</body></html>
+
+C:\Users\Dell>
+
+---------------------------------------------------------------------------------------------------------------------
+Note: in above as the user context of webserver folder file is not acceptable for httml hence we are getting Forbidden
+---------------------------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------------------------
+how to avoid this issue or disable the authentication feature in SELinux?
+two approaches:-
+----------------
+
+  1. disable the SELinux=0 in config file
+  2. modify the SELinux mode via command promt
+
+[root@localhost /]# getenforce  #################>>>>>>>>>>>>>> Enforceing will not allow unauthorized
+Enforcing
+[root@localhost /]# setenforce 0 #################>>>>>>>>>>>>>> Permissive will allow unauthorized and entry in selinux logs.
+[root@localhost /]# getenforce
+Permissive
+[root@localhost /]#
+
+>>>>>>>>>>>>> Now look at below file is accessable. 
+
+C:\Users\Dell>curl http://192.168.1.9:80/webserver/
+Hello this is ngnix another locaiton from /webserver context
+
+C:\Users\Dell>
+
+
+Approach -2 : Modify selinux config
+===========================================================================================================================================================
+
+Step1:  Assign SELINUX field as disabled
+
+[root@localhost ~]# grep SELINUX /etc/selinux/config
+# SELINUX= can take one of these three values:
+# NOTE: In earlier Fedora kernel builds, SELINUX=disabled would also
+#SELINUX=enforcing
+SELINUX=disabled
+# SELINUXTYPE= can take one of these three values:
+SELINUXTYPE=targeted
+[root@localhost ~]#
+
+Step2:  As the SELINUX is not service to take affect, it is feature in kernal, hence we need to reboot the box.
+[root@localhost ~]# reboot
+
+Step3: Verify the SELINUX mode
+[root@localhost ~]# getenforce
+Disabled
+
+Step3: Now try to access the files from outside of the box.
+
+C:\Users\Dell>curl 192.168.1.9:80
+hello html page under html folder
+
+C:\Users\Dell>curl 192.168.1.9:80/webserver/
+Hello this is ngnix another locaiton from /webserver context
+
+C:\Users\Dell>
+
+[root@localhost webserver]# ls -ltrZ /var/www/html/index.html ; ls -ltrZ /var/www/html/webserver/index.html
+-rw-r--r--. 1 root root unconfined_u:object_r:httpd_sys_content_t:s0 34 Oct 29 19:26 /var/www/html/index.html
+-rw-r--r--. 1 root root unconfined_u:object_r:user_home_t:s0 61 Oct 29 18:59 /var/www/html/webserver/index.html
+[root@localhost webserver]#
+
+#############>>>>>>>>>>>>>>> if you see anove the urls are accessable amd even different user profile context (webserver) also accessable.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
