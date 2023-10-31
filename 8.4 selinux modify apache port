@@ -65,7 +65,99 @@ http_port_t                    tcp      80, 81, 443, 488, 8008, 8009, 8443, 9000
 Step6: Now lets add 888 also to list
 [root@rhelnode1 selinux]# semanage port -a -t http_port_t -p tcp 888
 
-[root@rhelnode1 selinux]# systemctl restart httpd
+[root@rhelnode1 selinux]# systemctl status httpd
+● httpd.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)
+     Active: active (running) since Tue 2023-10-31 13:31:40 IST; 1min 17s ago
+       Docs: man:httpd.service(8)
+   Main PID: 6242 (httpd)
+     Status: "Total requests: 0; Idle/Busy workers 100/0;Requests/sec: 0; Bytes served/sec:   0 B/sec"
+      Tasks: 213 (limit: 23440)
+     Memory: 28.8M
+        CPU: 139ms
+     CGroup: /system.slice/httpd.service
+             ├─6242 /usr/sbin/httpd -DFOREGROUND
+             ├─6243 /usr/sbin/httpd -DFOREGROUND
+             ├─6244 /usr/sbin/httpd -DFOREGROUND
+             ├─6245 /usr/sbin/httpd -DFOREGROUND
+             └─6246 /usr/sbin/httpd -DFOREGROUND
+
+Oct 31 13:31:01 rhelnode1 systemd[1]: Starting The Apache HTTP Server...
+Oct 31 13:31:18 rhelnode1 httpd[6242]: AH00558: httpd: Could not reliably determine the server's fully qualified domain name, usin>
+Oct 31 13:31:40 rhelnode1 httpd[6242]: Server configured, listening on: port 888
+Oct 31 13:31:40 rhelnode1 systemd[1]: Started The Apache HTTP Server.
+
+Step 7: try access port url from local machine.
+
+[root@rhelnode1 selinux]# curl localhost:888
+hello html page under html folder
+[root@rhelnode1 selinux]#
+
+Step8: Try access port url from outside machine
+C:\Users\Dell>curl http://192.168.1.9:888/
+curl: (28) Failed to connect to 192.168.1.9 port 888 after 21003 ms: Couldn't connect to server
+
+C:\Users\Dell>
+
+
+Step9: verify firewall ports
+[root@rhelnode1 selinux]# firewall-cmd --list-all
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: enp0s3 enp0s8
+  sources:
+  services: cockpit dhcpv6-client http ssh
+  ports:
+  protocols:
+  forward: yes
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+
+
+Step10: Add http new port 888 to firewall
+
+[root@rhelnode1 selinux]# firewall-cmd --permanent --add-port=888/tcp
+success
+[root@rhelnode1 selinux]# firewall-cmd --reload
+success
+[root@rhelnode1 selinux]# firewall-cmd --list-all
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: enp0s3 enp0s8
+  sources:
+  services: cockpit dhcpv6-client http ssh
+  ports: 888/tcp
+  protocols:
+  forward: yes
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+[root@rhelnode1 selinux]#
+
+Step11: Try access from outside node. 
+
+C:\Users\Dell>curl http://192.168.1.9:888/
+hello html page under html folder
+
+C:\Users\Dell>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
