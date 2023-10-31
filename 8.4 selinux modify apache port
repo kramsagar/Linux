@@ -1,0 +1,76 @@
+Step1: verify current port of http
+[root@rhelnode1 selinux]# grep -i listen /etc/httpd/conf/httpd.conf  | grep -v '#'
+Listen 80
+[root@rhelnode1 selinux]#
+
+Step2: Modify the port of http from 80 to 888
+[root@rhelnode1 selinux]# grep -i listen /etc/httpd/conf/httpd.conf  | grep -v '#'
+Listen 888
+[root@rhelnode1 selinux]#
+
+Step3: make sure enforecing mode as "enforcing" and it should not be permisive/ disable
+[root@rhelnode1 selinux]# getenforce
+Enforcing
+[root@rhelnode1 selinux]#
+
+Step4: Now verify http service responding or not
+[root@rhelnode1 selinux]# systemctl restart httpd
+Job for httpd.service failed because the control process exited with error code.
+See "systemctl status httpd.service" and "journalctl -xeu httpd.service" for details.
+
+journalctl logs:::
+
+[root@rhelnode1 selinux]# journalctl -xeu httpd.service
+░░ Support: https://access.redhat.com/support
+░░
+░░ A start job for unit httpd.service has begun execution.
+░░
+░░ The job identifier is 8853.
+Oct 31 13:21:02 rhelnode1 httpd[5649]: AH00558: httpd: Could not reliably determine the server's fully qualified domain name, usin>
+Oct 31 13:21:02 rhelnode1 httpd[5649]: (13)Permission denied: AH00072: make_sock: could not bind to address [::]:888
+Oct 31 13:21:02 rhelnode1 httpd[5649]: (13)Permission denied: AH00072: make_sock: could not bind to address 0.0.0.0:888
+Oct 31 13:21:02 rhelnode1 httpd[5649]: no listening sockets available, shutting down
+Oct 31 13:21:02 rhelnode1 httpd[5649]: AH00015: Unable to open logs
+Oct 31 13:21:02 rhelnode1 systemd[1]: httpd.service: Main process exited, code=exited, status=1/FAILURE
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://access.redhat.com/support
+░░
+░░ An ExecStart= process belonging to unit httpd.service has exited.
+░░
+░░ The process' exit code is 'exited' and its exit status is 1.
+Oct 31 13:21:02 rhelnode1 systemd[1]: httpd.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://access.redhat.com/support
+░░
+░░ The unit httpd.service has entered the 'failed' state with result 'exit-code'.
+Oct 31 13:21:02 rhelnode1 systemd[1]: Failed to start The Apache HTTP Server.
+░░ Subject: A start job for unit httpd.service has failed
+░░ Defined-By: systemd
+░░ Support: https://access.redhat.com/support
+░░
+░░ A start job for unit httpd.service has finished with a failure.
+░░
+░░ The job identifier is 8853 and the job result is failed.
+
+[root@rhelnode1 selinux]#
+
+
+Step5:  SElinux given set of ports only allowed and 888 is not part of below.
+[root@rhelnode1 selinux]# semanage port -l | grep ^http_port_t
+http_port_t                    tcp      80, 81, 443, 488, 8008, 8009, 8443, 9000
+[root@rhelnode1 selinux]
+
+Step6: Now lets add 888 also to list
+[root@rhelnode1 selinux]# semanage port -a -t http_port_t -p tcp 888
+
+[root@rhelnode1 selinux]# systemctl restart httpd
+
+
+
+
+
+
+
+
