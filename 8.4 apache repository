@@ -41,5 +41,63 @@ C:\Users\Dell>curl http://192.168.1.9/repositories/
 C:\Users\Dell>
 
 
+------------------->
+
+
+[root@rhel-server yum.repos.d]# yum repolist all
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+repo id                                                            repo name                                                status
+apprepo-packages                                                   apppackages-repo                                         enabled
+basic-application-packages                                         baseos-repo                                              enabled
+[root@rhel-server yum.repos.d]# systemctl status httpd
+Unit httpd.service could not be found.
+[root@rhel-server yum.repos.d]# getenforce
+Enforcing
+[root@rhel-server yum.repos.d]# firewall-cmd --list-all
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: enp0s3
+  sources:
+  services: cockpit dhcpv6-client ssh
+  ports:
+  protocols:
+  forward: yes
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+[root@rhel-server yum.repos.d]# yum
+
+
+[root@rhel-server yum.repos.d]# yum install httpd
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+baseos-repo                                                                                         28 MB/s | 1.7 MB     00:00
+Errors during downloading metadata for repository 'basic-application-packages':
+  - Downloading successful, but checksum doesn't match. Calculated: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855(sha256)  Expected: 951a2367c42d5c3fb70e6d8ad430d120cc32e639b361139eaf68d8d2c6569003(sha256)
+Error: Failed to download metadata for repo 'basic-application-packages': Yum repo downloading error: Downloading error(s): repodata/951a2367c42d5c3fb70e6d8ad430d120cc32e639b361139eaf68d8d2c6569003-productid.gz - Cannot download, all mirrors were already tried without success
+[root@rhel-server yum.repos.d]#
+
+
+[root@rhel-server yum.repos.d]# firewall-cmd --permanent --add-service=http
+success
+[root@rhel-server yum.repos.d]# firewall-cmd --reload
+success
+[root@rhel-server yum.repos.d]#
+
+
+
+
+
+
 
 
