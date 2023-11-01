@@ -1,0 +1,30 @@
+Q2 -> Configure YUM repository with given link 2 repo (1st - baseOS. 2nd - Appsteam)
+ - BaseOS -> http://content.example.com/rhel8.0/x86_64/dvd/BaseOS
+ - AppSteam -> http://content.example.com/rhel8.0/x86_64/dvd/AppStream 
+
+[root@redhatservera yum.repos.d]# pwd
+/etc/yum.repos.d
+=====================================================================================================================
+[root@redhatservera yum.repos.d]# cat newrepos.repo
+[rhelbase]
+name=baseospackage
+baseurl=http://content.example.com/rhel8.0/x86_64/dvd/BaseOS/
+gpgcheck=0
+enabled=1
+
+[rhelappstream]
+name=appstreampackes
+baseurl=http://content.example.com/rhel8.0/x86_64/dvd/AppStream/
+gpgcheck=0
+enabled=1
+=========================================================================================================================
+[root@redhatservera yum.repos.d]# yum repolist all
+Updating Subscription Management repositories.
+Unable to read consumer identity
+
+This system is not registered with an entitlement server. You can use subscription-manager to register.
+
+repo id                                                            repo name                                                status
+rhelappstream                                                      appstreampackes                                          enabled
+rhelbase                                                           baseospackage                                            enabled
+[root@redhatservera yum.repos.d]#
