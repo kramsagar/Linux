@@ -1,0 +1,8 @@
+create user 'bob' with 2112 uid and set the password 'trootent'
+
+[root@redhatservera ~]# adduser -u 2112 bob
+
+[root@redhatservera ~]# echo 'trootent' | passwd --stdin bob
+Changing password for user bob.
+passwd: all authentication tokens updated successfully.
+
