@@ -1,0 +1,30 @@
+Create a collaborative Directory.
+	- Create the directory "/home/manager" with the following characteristcs
+	- Group ownership of "/home/manager" should go to "sysadms" group.
+	- The directory should have full permission for all members of "sysadms" group but not to the other users except "root"
+	- Files created in future under "home/manager" should get the same group ownership
+
+=====================================================================================================================================
+[root@redhatservera ~]# mkdir /home/manager
+
+[root@redhatservera ~]# groupadd sysadms
+groupadd: group 'sysadms' already exists
+
+[root@redhatservera ~]# chgrp sysadms      /home/manager
+
+[root@redhatservera ~]# chmod 770  /home/manager
+
+[root@redhatservera ~]# chmod g+s /home/manager
+
+[root@redhatservera manager]# ls -ld /home/manager
+drwxrws---. 2 root sysadms 17 Nov  1 16:29 /home/manager
+
+[root@redhatservera manager]# cat > 123
+hellow
+^C
+[root@redhatservera manager]# ls -ltr 123
+-rw-r--r--. 1 root sysadms 7 Nov  1 16:38 123
+
+
+
+
