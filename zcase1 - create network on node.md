@@ -12,6 +12,8 @@ In the main menu choose set hose then enter host name (first part of fqdn). And 
 input for nmcli for same settup:
 ================================
 [root@redhatservera ssh]# nmcli connection add type ethernet ipv4.addresses 172.25.10.11/24 ipv4.gateway 172.25.250.254 ipv4.dns 172.25.254.254 ipv4.dns-search lab.example.com ipv4.method manual
+
+
 Connection 'ethernet-1' (1f21783f-fc70-4c6b-a53e-2260037e6ea1) successfully added.
 [root@redhatservera ssh]# nmcli connection show
 NAME                   UUID                                  TYPE      DEVICE
@@ -19,6 +21,7 @@ enp0s3                 af8ff32b-5d36-3281-883a-ed951a505a25  ethernet  enp0s3
 Ethernet connection 1  91e24355-ff46-4d3c-8510-8d81bd94f57e  ethernet  enp0s8
 ethernet               824f0400-4113-452c-8825-2f37681edd87  ethernet  --
 ethernet-1             1f21783f-fc70-4c6b-a53e-2260037e6ea1  ethernet  --
+
 
 [root@redhatservera ssh]# nmcli connection show ethernet-1
 
