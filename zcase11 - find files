@@ -1,0 +1,31 @@
+#######locate all files owned by user 'harry' and copy it under /root/harry-files
+
+[root@rhelnode1 ~]# adduser harry
+adduser: user 'harry' already exists
+[root@rhelnode1 ~]# mkdir /root/harry-files
+[root@rhelnode1 ~]# su harry
+[harry@rhelnode1 root]$ cd ~
+[harry@rhelnode1 ~]$ ls -ltr
+total 0
+[harry@rhelnode1 ~]$ touch 1file
+[harry@rhelnode1 ~]$ touch harry2
+
+[rkyasan44@rhelnode1 harry]$ su -
+Password:
+[root@rhelnode1 ~]# find / -user harry -exec cp -rvfp {} /root/harry-files \;
+'/home/harry' -> '/root/harry-files/harry'
+'/home/harry/.bash_logout' -> '/root/harry-files/harry/.bash_logout'
+'/home/harry/.bash_profile' -> '/root/harry-files/harry/.bash_profile'
+'/home/harry/.bashrc' -> '/root/harry-files/harry/.bashrc'
+'/home/harry/1file' -> '/root/harry-files/harry/1file'
+................
+
+[root@rhelnode1 ~]# cd /root/harry-files/
+[root@rhelnode1 harry-files]# ls -ltr
+total 0
+drwxr-xr-x. 2 harry sysadms   6 Feb 28  2022 plugins
+drwxr-xr-x. 2 harry sysadms   6 Feb 28  2022 extensions
+-rw-r--r--. 1 harry sysadms   0 Nov  1 18:37 1file
+-rw-r--r--. 1 harry sysadms   0 Nov  1 18:37 harry2
+drwx------. 4 harry sysadms 119 Nov  1 18:37 harry
+drwx------. 3 root  root     30 Nov  1 18:38 3624
