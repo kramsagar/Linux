@@ -1,0 +1,117 @@
+Dedug SELinux:
+1. A web server running on non-standard port 82 is having issues serving content, debug and fix the issues.
+2. The web server on your system can server all the existing HTML files from /var/www/html (Dont make any changes to these files)
+3. Web service should automatically start at boot time.
+
+=======================================================================================================================================
+Step1 -> check the status of httpd. it is in failed state.
+[root@rhelnode1 conf]# systemctl restart httpd
+Job for httpd.service failed because the control process exited with error code.
+See "systemctl status httpd.service" and "journalctl -xeu httpd.service" for details.
+[root@rhelnode1 conf]#
+
+Step2 -> 
+[root@rhelnode1 conf]# pwd
+/etc/httpd/conf
+[root@rhelnode1 conf]# vi httpd.conf
+[root@rhelnode1 conf]# grep 82 httpd.conf
+Listen 82
+
+      [root@rhelnode1 conf]# getenforce
+      Enforcing
+      [root@rhelnode1 conf]#
+      
+      [root@rhelnode1 conf]# firewall-cmd --list-all
+      public (active)
+        target: default
+        icmp-block-inversion: no
+        interfaces: enp0s3 enp0s8 enp0s9
+        sources:
+        services: cockpit dhcpv6-client http ssh
+        ports: 888/tcp
+        protocols:
+        forward: yes
+        masquerade: no
+        forward-ports:
+        source-ports:
+        icmp-blocks:
+        rich rules:
+     
+      [root@rhelnode1 conf]# firewall-cmd --permanent --remove-port=888/tcp
+      success
+      [root@rhelnode1 conf]# firewall-cmd --permanent --add-port=82/tcp
+      success
+      [root@rhelnode1 conf]# firewall-cmd --reload
+      success
+      
+      [root@rhelnode1 conf]# firewall-cmd --list-all
+      public (active)
+        target: default
+        icmp-block-inversion: no
+        interfaces: enp0s3 enp0s8 enp0s9
+        sources:
+        services: cockpit dhcpv6-client http ssh
+        ports: 82/tcp
+        protocols:
+        forward: yes
+        masquerade: no
+        forward-ports:
+        source-ports:
+        icmp-blocks:
+        rich rules:
+      [root@rhelnode1 conf]#
+
+
+
+[root@rhelnode1 conf]# semanage port --list | grep http
+http_cache_port_t              tcp      8080, 8118, 8123, 10001-10010
+http_cache_port_t              udp      3130
+http_port_t                    tcp      888, 80, 81, 443, 488, 8008, 8009, 8443, 9000
+pegasus_http_port_t            tcp      5988
+pegasus_https_port_t           tcp      5989
+
+[root@rhelnode1 conf]# semanage port -a -t http_port_t -p tcp 82
+
+[root@rhelnode1 conf]# semanage port -l | grep http
+http_cache_port_t              tcp      8080, 8118, 8123, 10001-10010
+http_cache_port_t              udp      3130
+http_port_t                    tcp      82, 888, 80, 81, 443, 488, 8008, 8009, 8443, 9000
+pegasus_http_port_t            tcp      5988
+pegasus_https_port_t           tcp      5989
+
+
+[root@rhelnode1 conf]# systemctl restart httpd
+[root@rhelnode1 conf]# curl localhost:82
+hello html page under html folder
+[root@rhelnode1 conf]#
+
+
+[root@rhelnode1 ~]# systemctl enable httpd
+
+[rkyasan44@rhelnode1 ~]$ systemctl list-unit-files | grep httpd
+UNIT FILE                                  STATE           VENDOR PRESET
+httpd.service                              enabled         disabled
+
+[rkyasan44@rhelnode1 ~]$ systemctl status httpd
+● httpd.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; vendor preset: disabled)
+     Active: active (running) since Wed 2023-11-01 10:11:47 IST; 32s ago
+       Docs: man:httpd.service(8)
+   Main PID: 1064 (httpd)
+     Status: "Total requests: 0; Idle/Busy workers 100/0;Requests/sec: 0; Bytes served/sec:   0 B/sec"
+      Tasks: 213 (limit: 23440)
+     Memory: 33.7M
+        CPU: 83ms
+     CGroup: /system.slice/httpd.service
+             ├─1064 /usr/sbin/httpd -DFOREGROUND
+             ├─1852 /usr/sbin/httpd -DFOREGROUND
+             ├─1854 /usr/sbin/httpd -DFOREGROUND
+             ├─1855 /usr/sbin/httpd -DFOREGROUND
+             └─1856 /usr/sbin/httpd -DFOREGROUND
+
+
+
+
+
+
+
