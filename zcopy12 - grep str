@@ -1,0 +1,16 @@
+###find a string 'ich' from "usr/share/dict/words" and put it into /root/lines file
+
+note: 
+
+grep "ich" usr/share/dict/words > /root/lines
+
+verification:-
+a. grep "ich" usr/share/dict/words | wc -l
+b. grep "ich"  /root/lines | wc -l
+
+both outputs of a & b should be matched.
+
+
+
+
+
