@@ -1,0 +1,39 @@
+create a user account with supplimentary group
+  - create the group a named "sysadms"
+  - create users as named "natasha" and "harry", will be the supplementry group "sysadms"
+  - create a user as named "sarah", should have non-interactive shell and it should be not  the member of "sysadms"
+  - password for all users should be "trootent"
+
+==============================================================================================================
+[root@redhatservera ~]# groupadd sysadms
+
+[root@redhatservera ~]# tail -1 /etc/group
+sysadms:x:3115:
+[root@redhatservera ~]# adduser -G sysadms natasha
+[root@redhatservera ~]# adduser -G sysadms harry
+[root@redhatservera ~]# tail -2 /etc/passwd
+natasha:x:3115:3116::/home/natasha:/bin/bash
+harry:x:3116:3117::/home/harry:/bin/bash
+
+[root@redhatservera ~]# adduser -s /sbin/nologin sarah
+[root@redhatservera ~]# tail -3 /etc/passwd
+natasha:x:3115:3116::/home/natasha:/bin/bash
+harry:x:3116:3117::/home/harry:/bin/bash
+sarah:x:3117:3118::/home/sarah:/sbin/nologin
+
+[root@redhatservera ~]# su sarah
+This account is currently not available.
+
+
+[root@redhatservera ~]# echo "trootent"|passwd --stdin natasha
+Changing password for user natasha.
+passwd: all authentication tokens updated successfully.
+[root@redhatservera ~]# echo "trootent"|passwd --stdin harry
+Changing password for user harry.
+passwd: all authentication tokens updated successfully.
+[root@redhatservera ~]# echo "trootent"|passwd --stdin sarah
+Changing password for user sarah.
+passwd: all authentication tokens updated successfully.
+
+[root@redhatservera ~]#
+
