@@ -1,0 +1,14 @@
+#create an archive 'root/backup.tar' of /usr/local/ directory and compress it with gzip
+
+su - 
+cd /
+> tar -cvzf /root/backup.tar.gz  /usr/local/ #gzip type
+> tar -cvjf /root/backup.tar.bz2 /usr/local  #bzip type
+
+[root@rhel2 ~]# ls -ltr
+-rw-r--r--. 1 root root    0 Nov  2 10:55 backup.tar.gz
+-rw-r--r--. 1 root root  487 Nov  2 10:57 backup.tar.bz2
+[root@rhel2 ~]#
+
+
+
