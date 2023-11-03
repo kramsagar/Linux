@@ -22,7 +22,8 @@ echo 'EX200 welcome!'
 EX200 welcome!
 
 Note: difference between su vs su - ; su doent execute login shell, but su - execute login shell
-==============================================================================================================
+
+==========================================SUDO for group and user====================================================================
 
 -> provide nopasswd sudo privileges for specific user
 -> provide nopasswd sudo privileges for specific group
@@ -45,7 +46,7 @@ natasha ALL=(ALL)       ALL
 natasha ALL=(ALL)       NOPASSWD: ALL
 
 
-==============================================================================================================
+============================================UMASK==================================================================
 
 [rkyasan44@rhel2 ~]$ ls -ltr
 drwxrwxr-x. 2 rkyasan44 rkyasan44  6 Nov  3 11:10 newfolder
