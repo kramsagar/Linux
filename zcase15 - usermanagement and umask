@@ -1,0 +1,75 @@
+# configure app to show message "EX200 welcome !" for user natasha
+
+> su to natasha
+> update .bash_profile file
+
+[natasha@rhel2 ~]$ cat .bash_profile
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+# User specific environment and startup programs
+echo 'EX200 welcome!'
+[natasha@rhel2 ~]$
+
+
+> logout
+> Now try to login.
+[root@rhel2 ~]# su - natasha
+EX200 welcome!
+
+Note: difference between su vs su - ; su doent execute login shell, but su - execute login shell
+==============================================================================================================
+
+-> provide nopasswd sudo privileges for specific user
+-> provide nopasswd sudo privileges for specific group
+
+##
+## Allow root to run any commands anywhere
+root    ALL=(ALL)       ALL
+natasha ALL=(ALL)       ALL
+
+## Allows members of the 'sys' group to run networking, software,
+## service management apps and more.
+# %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
+
+## Allows people in group wheel to run all commands
+%wheel  ALL=(ALL)       ALL
+%sysadms ALL=(ALL)      ALL
+## Same thing without a password
+#%wheel ALL=(ALL)       NOPASSWD: ALL
+%sysadms ALL=(ALL)      NOPASSWD: ALL
+natasha ALL=(ALL)       NOPASSWD: ALL
+
+
+==============================================================================================================
+
+[rkyasan44@rhel2 ~]$ ls -ltr
+drwxrwxr-x. 2 rkyasan44 rkyasan44  6 Nov  3 11:10 newfolder
+-rw-rw-r--. 1 rkyasan44 rkyasan44  0 Nov  3 11:10 newfile
+[rkyasan44@rhel2 ~]$ umask -S
+u=rwx,g=rwx,o=rx
+[rkyasan44@rhel2 ~]$ vi .bashrc  <--------------- edit file enter umask 007
+
+[rkyasan44@rhel2 ~]$ grep umask .bashrc
+umask 007
+
+[rkyasan44@rhel2 ~]$ ls -ltr
+drwxrwxr-x. 2 rkyasan44 rkyasan44  6 Nov  3 11:10 newfolder
+-rw-rw-r--. 1 rkyasan44 rkyasan44  0 Nov  3 11:10 newfile
+drwxrwx---. 2 rkyasan44 rkyasan44  6 Nov  3 11:12 newfolder1
+-rw-rw----. 1 rkyasan44 rkyasan44  0 Nov  3 11:12 newfile1
+
+#folder level -> 777 - (permission) umask ; file level -> 666 - (permission) = umask
+
+===================================
+
+
+
+
+
+
+
