@@ -1,0 +1,23 @@
+Script:
+ - store the search results of all files in the /usr/share directory that is greater than 50MB and less than 100MB in the /mnt/freespace/search.txt file
+
+[rkyasan44@rhel2 tmp]$ cat test.sh
+#!/bin/sh
+find /usr/share -size +50M -size -100M > /tmp/freespace/search.txt
+cat /tmp/freespace/search.txt
+
+[rkyasan44@rhel2 tmp]$
+
+
+
+[rkyasan44@rhel2 tmp]$ chmod +x test.sh
+
+[rkyasan44@rhel2 tmp]$ ./test.sh
+find: ‘/usr/share/polkit-1/rules.d’: Permission denied
+find: ‘/usr/share/empty.sshd’: Permission denied
+/usr/share/libLLVM-13.so
+/usr/share/rpmdb.sqlite
+
+
+
+
