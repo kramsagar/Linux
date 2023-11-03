@@ -1,0 +1,13 @@
+Configure system tuning;
+- choose the recommended tuned profile for your system and set it as the default.
+
+> tuned-adm active
+Current active profile: balanced
+
+> tuned-adm recommend
+virtual-guest
+
+> tuned-adm profile virtual-guest
+
+> tuned-adm active
+Current active profile: virtual-guest
