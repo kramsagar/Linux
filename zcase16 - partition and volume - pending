@@ -1,0 +1,8 @@
+/*
+* In the server 3 disks given 
+* 1. /dev/vda  -> root file system
+* 2. /dev/vdb  -> you need to use this for swap and  lvm partition
+* 3. /dev/vdc  -> you need to use this for STRATIS/VDO
+*/
+
+
