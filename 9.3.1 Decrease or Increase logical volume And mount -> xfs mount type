@@ -1,0 +1,58 @@
+[root@rhel2 ~]# df -Th
+Filesystem                             Type      Size  Used Avail Use% Mounted on
+devtmpfs                               devtmpfs  858M     0  858M   0% /dev
+tmpfs                                  tmpfs     888M     0  888M   0% /dev/shm
+tmpfs                                  tmpfs     355M  5.6M  350M   2% /run
+/dev/mapper/rhel-root                  xfs        66G  4.3G   61G   7% /
+/dev/sda1                              xfs      1014M  262M  753M  26% /boot
+/dev/sdb2                              xfs       2.0G   47M  2.0G   3% /application-part2
+/dev/sdb1                              xfs      1014M   40M  975M   4% /application-part1
+/dev/mapper/rhel-home                  xfs        32G  265M   32G   1% /home
+tmpfs                                  tmpfs     178M   52K  178M   1% /run/user/42
+tmpfs                                  tmpfs     178M   36K  178M   1% /run/user/1000
+/dev/mapper/ram--proj--volumegroup-lv0 xfs      1014M   40M  975M   4% /srepart
+/dev/mapper/ram--proj--volumegroup-lv1 ext4      974M   24K  907M   1% /opspart
+[root@rhel2 ~]# lvextend -L +1G /dev/mapper/ram--proj--volumegroup-lv0
+  Size of logical volume ram-proj-volumegroup/lv0 changed from 1.00 GiB (256 extents) to 2.00 GiB (512 extents).
+  Logical volume ram-proj-volumegroup/lv0 successfully resized.
+[root@rhel2 ~]# df -Th
+Filesystem                             Type      Size  Used Avail Use% Mounted on
+devtmpfs                               devtmpfs  858M     0  858M   0% /dev
+tmpfs                                  tmpfs     888M     0  888M   0% /dev/shm
+tmpfs                                  tmpfs     355M  5.6M  350M   2% /run
+/dev/mapper/rhel-root                  xfs        66G  4.3G   61G   7% /
+/dev/sda1                              xfs      1014M  262M  753M  26% /boot
+/dev/sdb2                              xfs       2.0G   47M  2.0G   3% /application-part2
+/dev/sdb1                              xfs      1014M   40M  975M   4% /application-part1
+/dev/mapper/rhel-home                  xfs        32G  265M   32G   1% /home
+tmpfs                                  tmpfs     178M   52K  178M   1% /run/user/42
+tmpfs                                  tmpfs     178M   36K  178M   1% /run/user/1000
+/dev/mapper/ram--proj--volumegroup-lv0 xfs      1014M   40M  975M   4% /srepart
+/dev/mapper/ram--proj--volumegroup-lv1 ext4      974M   24K  907M   1% /opspart
+[root@rhel2 ~]# xfs_growfs /dev/mapper/ram--proj--volumegroup-lv0
+meta-data=/dev/mapper/ram--proj--volumegroup-lv0 isize=512    agcount=4, agsize=65536 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=1, sparse=1, rmapbt=0
+         =                       reflink=1    bigtime=1 inobtcount=1
+data     =                       bsize=4096   blocks=262144, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+data blocks changed from 262144 to 524288
+[root@rhel2 ~]# df -Th
+Filesystem                             Type      Size  Used Avail Use% Mounted on
+devtmpfs                               devtmpfs  858M     0  858M   0% /dev
+tmpfs                                  tmpfs     888M     0  888M   0% /dev/shm
+tmpfs                                  tmpfs     355M  5.6M  350M   2% /run
+/dev/mapper/rhel-root                  xfs        66G  4.3G   61G   7% /
+/dev/sda1                              xfs      1014M  262M  753M  26% /boot
+/dev/sdb2                              xfs       2.0G   47M  2.0G   3% /application-part2
+/dev/sdb1                              xfs      1014M   40M  975M   4% /application-part1
+/dev/mapper/rhel-home                  xfs        32G  265M   32G   1% /home
+tmpfs                                  tmpfs     178M   52K  178M   1% /run/user/42
+tmpfs                                  tmpfs     178M   36K  178M   1% /run/user/1000
+/dev/mapper/ram--proj--volumegroup-lv0 xfs       2.0G   47M  2.0G   3% /srepart
+/dev/mapper/ram--proj--volumegroup-lv1 ext4      974M   24K  907M   1% /opspart
+[root@rhel2 ~]#
