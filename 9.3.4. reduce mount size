@@ -1,0 +1,34 @@
+[root@rhel2 ~]# df -TH
+Filesystem                             Type      Size  Used Avail Use% Mounted on
+devtmpfs                               devtmpfs  899M     0  899M   0% /dev
+tmpfs                                  tmpfs     931M     0  931M   0% /dev/shm
+tmpfs                                  tmpfs     373M  5.9M  367M   2% /run
+/dev/mapper/rhel-root                  xfs        70G  4.6G   66G   7% /
+/dev/sda1                              xfs       1.1G  274M  790M  26% /boot
+/dev/sdb2                              xfs       2.2G   49M  2.1G   3% /application-part2
+/dev/sdb1                              xfs       1.1G   42M  1.1G   4% /application-part1
+/dev/mapper/rhel-home                  xfs        35G  278M   34G   1% /home
+tmpfs                                  tmpfs     187M   54k  187M   1% /run/user/42
+tmpfs                                  tmpfs     187M   37k  187M   1% /run/user/1000
+/dev/mapper/ram--proj--volumegroup-lv0 xfs       2.2G   50M  2.1G   3% /srepart
+/dev/mapper/ram--proj--volumegroup-lv1 ext4      2.1G  3.2M  2.0G   1% /opspart
+
+
+[root@rhel2 ~]# lvreduce -L -1G /dev/mapper/ram--proj--volumegroup-lv0
+  WARNING: Reducing active and open logical volume to 1.00 GiB.
+  THIS MAY DESTROY YOUR DATA (filesystem etc.)
+Do you really want to reduce ram-proj-volumegroup/lv0? [y/n]: y
+  Size of logical volume ram-proj-volumegroup/lv0 changed from 2.00 GiB (512 extents) to 1.00 GiB (256 extents).
+  Logical volume ram-proj-volumegroup/lv0 successfully resized.
+  
+[root@rhel2 ~]# lvreduce -L -1G /dev/mapper/ram--proj--volumegroup-lv1
+  WARNING: Reducing active and open logical volume to 1.00 GiB.
+  THIS MAY DESTROY YOUR DATA (filesystem etc.)
+Do you really want to reduce ram-proj-volumegroup/lv1? [y/n]: y
+  Size of logical volume ram-proj-volumegroup/lv1 changed from 2.00 GiB (512 extents) to 1.00 GiB (256 extents).
+  Logical volume ram-proj-volumegroup/lv1 successfully resized.
+[root@rhel2 ~]#
+
+
+
+
