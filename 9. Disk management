@@ -117,7 +117,7 @@ The partition table has been altered.
 Calling ioctl() to re-read partition table.
 Syncing disks.
 
-[root@rhel2 dev]#
+[root@rhel2 dev]# partprobe
 
 #Now view partition created or not under sdb disk
 
