@@ -208,6 +208,7 @@ UUID=f6d79dae-56ab-4145-a0a1-6ff2cd69aacd /boot                   xfs     defaul
 /dev/sdb2       /application-part2              xfs     defaults        0 0
 /dev/sdb1       /application-part1              xfs     defaults        0 0
 
+************* Disk   mount  type  defaults  owner of mount and owner of guid
 
 ********# once added  entries run below command
 [root@rhel2 ~]# systemctl daemon-reload
