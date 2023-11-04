@@ -215,6 +215,8 @@ Command (m for help): w
 The partition table has been altered.
 Syncing disks.
 
+[root@rhel2 ~]# partprobe
+
 
 Step3) ============================================> now swap type partition created under /dev/sdb
 
