@@ -1,0 +1,219 @@
+#
+
+
+#
+
+
+# View Disk and partition info:
+
+[root@rhel2 rkyasan44]# fdisk -l  #here sda is disk and under that sda1 and sda2 are partition info.
+Disk /dev/sda: 100 GiB, 107374182400 bytes, 209715200 sectors
+Disk model: VBOX HARDDISK
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd317af81
+
+Device     Boot   Start       End   Sectors Size Id Type
+/dev/sda1  *       2048   2099199   2097152   1G 83 Linux
+/dev/sda2       2099200 209715199 207616000  99G 8e Linux LVM
+
+# view disk as file system  --------------------------------------------> Each file stored as block file
+
+[root@rhel2 dev]# ls -l | grep sd
+brw-rw----. 1 root      disk      8,   0 Nov  3 20:34 sda
+brw-rw----. 1 root      disk      8,   1 Nov  3 20:45 sda1
+brw-rw----. 1 root      disk      8,   2 Nov  3 20:34 sda2
+brw-rw----. 1 root      disk      8,  16 Nov  3 20:34 sdb
+brw-rw----. 1 root      disk      8,  32 Nov  3 20:34 sdc
+brw-rw----. 1 root      disk      8,  48 Nov  3 20:34 sdd
+[root@rhel2 dev]#
+
+#Now i want to work on disk (/dev/sdb) and create a partition
+
+[root@rhel2 dev]# fdisk /dev/sdb
+
+Welcome to fdisk (util-linux 2.37.4).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS disklabel with disk identifier 0x0359fecd.
+
+Command (m for help): m
+
+Help:
+
+  DOS (MBR)
+   a   toggle a bootable flag
+   b   edit nested BSD disklabel
+   c   toggle the dos compatibility flag
+
+  Generic
+   d   delete a partition
+   F   list free unpartitioned space
+   l   list known partition types
+   n   add a new partition
+   p   print the partition table
+   t   change a partition type
+   v   verify the partition table
+   i   print information about a partition
+
+  Misc
+   m   print this menu
+   u   change display/entry units
+   x   extra functionality (experts only)
+
+  Script
+   I   load disk layout from sfdisk script file
+   O   dump disk layout to sfdisk script file
+
+  Save & Exit
+   w   write table to disk and exit
+   q   quit without saving changes
+
+  Create a new label
+   g   create a new empty GPT partition table
+   G   create a new empty SGI (IRIX) partition table
+   o   create a new empty DOS partition table
+   s   create a new empty Sun partition table
+
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p):
+
+Using default response p.
+Partition number (1-4, default 1):
+First sector (2048-10485759, default 2048):  ###########################-> every disk first 4 sectors for (mbr, lvm, lvm backup, metadata) 
+
+Using default response p.
+Partition number (1-4, default 1):
+First sector (2048-10485759, default 2048):
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-10485759, default 10485759): +1G   ##############->1 GB size partition
+
+Created a new partition 1 of type 'Linux' and of size 1 GiB.
+
+Command (m for help): m
+ 
+Command (m for help): p                          #########################-------------> view partition info
+Disk /dev/sdb: 5 GiB, 5368709120 bytes, 10485760 sectors
+Disk model: VBOX HARDDISK
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x0359fecd
+
+Device     Boot Start     End Sectors Size Id Type
+/dev/sdb1        2048 2099199 2097152   1G 83 Linux
+
+
+Command (m for help): w                          ########################### ----------------. Partition is saved
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+[root@rhel2 dev]#
+
+#Now view partition created or not under sdb disk
+
+[root@rhel2 dev]# lsblk
+NAME          MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda             8:0    0  100G  0 disk
+├─sda1          8:1    0    1G  0 part /boot
+└─sda2          8:2    0   99G  0 part
+  ├─rhel-root 253:0    0 65.1G  0 lvm  /
+  ├─rhel-swap 253:1    0    2G  0 lvm  [SWAP]
+  └─rhel-home 253:2    0 31.8G  0 lvm  /home
+sdb             8:16   0    5G  0 disk
+└─sdb1          8:17   0    1G  0 part  ----------------------------------------> new partition is created
+sdc             8:32   0    5G  0 disk
+sdd             8:48   0    5G  0 disk
+sr0            11:0    1 1024M  0 rom
+[root@rhel2 dev]#
+
+
+##Now format the parition as next steps with filesystem
+
+[root@rhel2 dev]# mkfs.xfs /dev/sdb1
+meta-data=/dev/sdb1              isize=512    agcount=4, agsize=65536 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=1, sparse=1, rmapbt=0
+         =                       reflink=1    bigtime=1 inobtcount=1
+data     =                       bsize=4096   blocks=262144, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+
+# create a directory and mount the partition to it.
+[root@rhel2 dev]# mkdir /application-part1
+
+#Now mount the partition to the folder
+[root@rhel2 dev]# mount /dev/sdb1 /application-part1
+
+
+#Now review the results.
+
+[root@rhel2 dev]# lsblk
+NAME          MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda             8:0    0  100G  0 disk
+├─sda1          8:1    0    1G  0 part /boot
+└─sda2          8:2    0   99G  0 part
+  ├─rhel-root 253:0    0 65.1G  0 lvm  /
+  ├─rhel-swap 253:1    0    2G  0 lvm  [SWAP]
+  └─rhel-home 253:2    0 31.8G  0 lvm  /home
+sdb             8:16   0    5G  0 disk
+└─sdb1          8:17   0    1G  0 part /application-part1   --------------> folder aligned to sdb1 partition
+sdc             8:32   0    5G  0 disk
+sdd             8:48   0    5G  0 disk
+sr0            11:0    1 1024M  0 rom
+
+[root@rhel2 dev]# df -h
+Filesystem             Size  Used Avail Use% Mounted on
+devtmpfs               858M     0  858M   0% /dev
+tmpfs                  888M     0  888M   0% /dev/shm
+tmpfs                  355M   11M  345M   3% /run
+/dev/mapper/rhel-root   66G  4.3G   61G   7% /
+/dev/mapper/rhel-home   32G  265M   32G   1% /home
+/dev/sda1             1014M  262M  753M  26% /boot
+tmpfs                  178M  100K  178M   1% /run/user/1000
+/dev/sdb1             1014M   40M  975M   4% /application-part1  --------------> folder aligned to sdb1 partition
+[root@rhel2 dev]#
+
+************************************** very very import ---> abov added mounts will be loose post reboot, so take next steps to added those mounts in fstab*********************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
