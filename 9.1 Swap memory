@@ -1,1 +1,14 @@
+[root@rhel2 ~]# free -m
+               total        used        free      shared  buff/cache   available
+Mem:            1774         468         933          11         372        1150
+Swap:           2095           0        2095
+[root@rhel2 ~]#
+
+*********** Mem - physical memory  (initial computer data stores in memory)
+*********** Swap - virtual memory   (if in case RAM is full and inactive pages pending then it will write into SWap. once RAM is free then system move from SWAP to RAM)
+
+** Lets understand steps to increase virtual memory SWAP
+
+
+
 
