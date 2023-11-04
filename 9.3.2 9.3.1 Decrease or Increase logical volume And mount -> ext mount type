@@ -1,0 +1,54 @@
+[root@rhel2 ~]# df -Th
+Filesystem                             Type      Size  Used Avail Use% Mounted on
+devtmpfs                               devtmpfs  858M     0  858M   0% /dev
+tmpfs                                  tmpfs     888M     0  888M   0% /dev/shm
+tmpfs                                  tmpfs     355M  5.6M  350M   2% /run
+/dev/mapper/rhel-root                  xfs        66G  4.3G   61G   7% /
+/dev/sda1                              xfs      1014M  262M  753M  26% /boot
+/dev/sdb2                              xfs       2.0G   47M  2.0G   3% /application-part2
+/dev/sdb1                              xfs      1014M   40M  975M   4% /application-part1
+/dev/mapper/rhel-home                  xfs        32G  265M   32G   1% /home
+tmpfs                                  tmpfs     178M   52K  178M   1% /run/user/42
+tmpfs                                  tmpfs     178M   36K  178M   1% /run/user/1000
+/dev/mapper/ram--proj--volumegroup-lv0 xfs       2.0G   47M  2.0G   3% /srepart
+/dev/mapper/ram--proj--volumegroup-lv1 ext4      974M   24K  907M   1% /opspart
+[root@rhel2 ~]# lvextend -L +1G /dev/mapper/ram--proj--volumegroup-lv1
+  Size of logical volume ram-proj-volumegroup/lv1 changed from 1.00 GiB (256 extents) to 2.00 GiB (512 extents).
+  Logical volume ram-proj-volumegroup/lv1 successfully resized.
+[root@rhel2 ~]# df -Th
+Filesystem                             Type      Size  Used Avail Use% Mounted on
+devtmpfs                               devtmpfs  858M     0  858M   0% /dev
+tmpfs                                  tmpfs     888M     0  888M   0% /dev/shm
+tmpfs                                  tmpfs     355M  5.6M  350M   2% /run
+/dev/mapper/rhel-root                  xfs        66G  4.3G   61G   7% /
+/dev/sda1                              xfs      1014M  262M  753M  26% /boot
+/dev/sdb2                              xfs       2.0G   47M  2.0G   3% /application-part2
+/dev/sdb1                              xfs      1014M   40M  975M   4% /application-part1
+/dev/mapper/rhel-home                  xfs        32G  265M   32G   1% /home
+tmpfs                                  tmpfs     178M   52K  178M   1% /run/user/42
+tmpfs                                  tmpfs     178M   36K  178M   1% /run/user/1000
+/dev/mapper/ram--proj--volumegroup-lv0 xfs       2.0G   47M  2.0G   3% /srepart
+/dev/mapper/ram--proj--volumegroup-lv1 ext4      974M   24K  907M   1% /opspart
+[root@rhel2 ~]# resize
+resize2fs   resizecons  resizepart
+[root@rhel2 ~]# resize2fs /dev/mapper/ram--proj--volumegroup-lv1
+resize2fs 1.46.5 (30-Dec-2021)
+Filesystem at /dev/mapper/ram--proj--volumegroup-lv1 is mounted on /opspart; on-line resizing required
+old_desc_blocks = 1, new_desc_blocks = 1
+The filesystem on /dev/mapper/ram--proj--volumegroup-lv1 is now 524288 (4k) blocks long.
+
+[root@rhel2 ~]# df -Th
+Filesystem                             Type      Size  Used Avail Use% Mounted on
+devtmpfs                               devtmpfs  858M     0  858M   0% /dev
+tmpfs                                  tmpfs     888M     0  888M   0% /dev/shm
+tmpfs                                  tmpfs     355M  5.6M  350M   2% /run
+/dev/mapper/rhel-root                  xfs        66G  4.3G   61G   7% /
+/dev/sda1                              xfs      1014M  262M  753M  26% /boot
+/dev/sdb2                              xfs       2.0G   47M  2.0G   3% /application-part2
+/dev/sdb1                              xfs      1014M   40M  975M   4% /application-part1
+/dev/mapper/rhel-home                  xfs        32G  265M   32G   1% /home
+tmpfs                                  tmpfs     178M   52K  178M   1% /run/user/42
+tmpfs                                  tmpfs     178M   36K  178M   1% /run/user/1000
+/dev/mapper/ram--proj--volumegroup-lv0 xfs       2.0G   47M  2.0G   3% /srepart
+/dev/mapper/ram--proj--volumegroup-lv1 ext4      2.0G  3.0M  1.9G   1% /opspart
+[root@rhel2 ~]#
