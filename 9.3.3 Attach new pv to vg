@@ -1,0 +1,105 @@
+[root@rhel2 ~]# vgs
+  VG                   #PV #LV #SN Attr   VSize   VFree
+  ram-proj-volumegroup   2   2   0 wz--n-   7.99g 3.99g
+  rhel                   1   3   0 wz--n- <99.00g    0
+[root@rhel2 ~]# pvs
+  PV         VG                   Fmt  Attr PSize   PFree
+  /dev/sda2  rhel                 lvm2 a--  <99.00g    0
+  /dev/sdc1  ram-proj-volumegroup lvm2 a--   <4.00g    0
+  /dev/sdd1  ram-proj-volumegroup lvm2 a--   <4.00g 3.99g
+[root@rhel2 ~]#
+
+Step1) take step to create new pv from claiming from device /dev/sde
+
+[root@rhel2 ~]# lsblk
+NAME                           MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda                              8:0    0  100G  0 disk
+├─sda1                           8:1    0    1G  0 part /boot
+└─sda2                           8:2    0   99G  0 part
+  ├─rhel-root                  253:0    0 65.1G  0 lvm  /
+  ├─rhel-swap                  253:1    0    2G  0 lvm  [SWAP]
+  └─rhel-home                  253:2    0 31.8G  0 lvm  /home
+sdb                              8:16   0    5G  0 disk
+├─sdb1                           8:17   0    1G  0 part /application-part1
+├─sdb2                           8:18   0    2G  0 part /application-part2
+└─sdb3                           8:19   0    1G  0 part [SWAP]
+sdc                              8:32   0    5G  0 disk
+└─sdc1                           8:33   0    4G  0 part
+  ├─ram--proj--volumegroup-lv0 253:3    0    2G  0 lvm  /srepart
+  └─ram--proj--volumegroup-lv1 253:4    0    2G  0 lvm  /opspart
+sdd                              8:48   0    5G  0 disk
+└─sdd1                           8:49   0    4G  0 part
+  └─ram--proj--volumegroup-lv1 253:4    0    2G  0 lvm  /opspart
+sde                              8:64   0    5G  0 disk
+sr0                             11:0    1 1024M  0 rom
+
+
+[root@rhel2 ~]# lsblk
+NAME                           MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda                              8:0    0  100G  0 disk
+├─sda1                           8:1    0    1G  0 part /boot
+└─sda2                           8:2    0   99G  0 part
+  ├─rhel-root                  253:0    0 65.1G  0 lvm  /
+  ├─rhel-swap                  253:1    0    2G  0 lvm  [SWAP]
+  └─rhel-home                  253:2    0 31.8G  0 lvm  /home
+sdb                              8:16   0    5G  0 disk
+├─sdb1                           8:17   0    1G  0 part /application-part1
+├─sdb2                           8:18   0    2G  0 part /application-part2
+└─sdb3                           8:19   0    1G  0 part [SWAP]
+sdc                              8:32   0    5G  0 disk
+└─sdc1                           8:33   0    4G  0 part
+  ├─ram--proj--volumegroup-lv0 253:3    0    2G  0 lvm  /srepart
+  └─ram--proj--volumegroup-lv1 253:4    0    2G  0 lvm  /opspart
+sdd                              8:48   0    5G  0 disk
+└─sdd1                           8:49   0    4G  0 part
+  └─ram--proj--volumegroup-lv1 253:4    0    2G  0 lvm  /opspart
+sde                              8:64   0    5G  0 disk
+└─sde1                           8:65   0    4G  0 part
+sr0                             11:0    1 1024M  0 rom
+
+
+[root@rhel2 ~]# mkfs.xfs /dev/sde1
+meta-data=/dev/sde1              isize=512    agcount=4, agsize=262144 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=1, sparse=1, rmapbt=0
+         =                       reflink=1    bigtime=1 inobtcount=1
+data     =                       bsize=4096   blocks=1048576, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
+log      =internal log           bsize=4096   blocks=2560, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+[root@rhel2 ~]#
+
+
+[root@rhel2 ~]# pvcreate /dev/sde1
+WARNING: xfs signature detected on /dev/sde1 at offset 0. Wipe it? [y/n]: y
+  Wiping xfs signature on /dev/sde1.
+  Physical volume "/dev/sde1" successfully created.
+[root@rhel2 ~]# pvs
+  PV         VG                   Fmt  Attr PSize   PFree
+  /dev/sda2  rhel                 lvm2 a--  <99.00g    0
+  /dev/sdc1  ram-proj-volumegroup lvm2 a--   <4.00g    0
+  /dev/sdd1  ram-proj-volumegroup lvm2 a--   <4.00g 3.99g
+  /dev/sde1                       lvm2 ---    4.00g 4.00g   ---------------------------> New PV 
+[root@rhel2 ~]#
+
+
+[root@rhel2 ~]# vgextend ram-proj-volumegroup /dev/sde1
+  Volume group "ram-proj-volumegroup" successfully extended
+[root@rhel2 ~]# pvs
+  PV         VG                   Fmt  Attr PSize   PFree
+  /dev/sda2  rhel                 lvm2 a--  <99.00g     0
+  /dev/sdc1  ram-proj-volumegroup lvm2 a--   <4.00g     0
+  /dev/sdd1  ram-proj-volumegroup lvm2 a--   <4.00g  3.99g
+  /dev/sde1  ram-proj-volumegroup lvm2 a--   <4.00g <4.00g  ----------------------------->Attached new PV to VG
+  
+[root@rhel2 ~]# vgs
+  VG                   #PV #LV #SN Attr   VSize   VFree
+  ram-proj-volumegroup   3   2   0 wz--n- <11.99g <7.99g
+  rhel                   1   3   0 wz--n- <99.00g     0
+[root@rhel2 ~]#
+
+
+
+
