@@ -1,8 +1,0 @@
-Configure AutoFS - All remoteusersX home directory is exported via NFS, which is available on utility.example.com(172.24.10.100) and your NFS-exports directory is /home/remoteuserX for remoteuserX
-
--remoteuserX's home directory is utility.example.com:/rhome/remoteuserX,
-where X is your station number and benath as /rhome/remoteuser5
-
--remoteuserX's home directory should be automounted autofs service
-
-- home directories must be writable by their users
