@@ -205,6 +205,120 @@ CONTAINER ID  IMAGE                           COMMAND           CREATED        S
 [rkyasan44@node1 ~]$
 
 
+===============================================  Services attahced to container ============================
+When ever the client machine or system rebooted, the container gets stopped.
+We need to control this behaviour by using service concepts.
+
+[rkyasan44@node1 ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED      STATUS          PORTS                 NAMES
+2b2712f69a92  docker.io/library/httpd:latest  httpd-foreground  5 hours ago  Up 5 hours ago                        gifted_lalande
+05392a5666a3  docker.io/library/httpd:latest  httpd-foreground  5 hours ago  Up 5 hours ago  0.0.0.0:9090->80/tcp  web1
+
+[rkyasan44@node1 ~]$ exit
+exit
+
+[root@node1 ~]# su - rkyasan44
+[rkyasan44@node1 ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED      STATUS          PORTS                 NAMES
+2b2712f69a92  docker.io/library/httpd:latest  httpd-foreground  5 hours ago  Up 5 hours ago                        gifted_lalande
+05392a5666a3  docker.io/library/httpd:latest  httpd-foreground  5 hours ago  Up 5 hours ago  0.0.0.0:9090->80/tcp  web1
+[rkyasan44@node1 ~]$
+
+
+########## Steps to create service
+[rkyasan44@node1 ~]$ mkdir -p .config/systemd/user
+[rkyasan44@node1 ~]$ tree .config/systemd
+.config/systemd
+└── user
+
+1 directory, 0 files
+
+[rkyasan44@node1 ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED         STATUS             PORTS       NAMES
+2e348e4b4567  docker.io/library/httpd:latest  httpd-foreground  10 seconds ago  Up 10 seconds ago              eloquent_hofstadter
+[rkyasan44@node1 ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED         STATUS             PORTS       NAMES
+2e348e4b4567  docker.io/library/httpd:latest  httpd-foreground  20 seconds ago  Up 20 seconds ago              eloquent_hofstadter
+[rkyasan44@node1 ~]$ podman generate systemd --name eloquent_hofstadter --new --files
+/home/rkyasan44/container-eloquent_hofstadter.service
+
+
+[rkyasan44@node1 ~]$ systemctl --user enable --now /home/rkyasan44/container-eloquent_hofstadter.service
+Created symlink /home/rkyasan44/.config/systemd/user/default.target.wants/container-eloquent_hofstadter.service → /home/rkyasan44/container-eloquent_hofstadter.service.
+Created symlink /home/rkyasan44/.config/systemd/user/container-eloquent_hofstadter.service → /home/rkyasan44/container-eloquent_hofstadter.service.
+
+
+[rkyasan44@node1 ~]$ systemctl --user status container-eloquent_hofstadter.service
+● container-eloquent_hofstadter.service - Podman container-eloquent_hofstadter.service
+     Loaded: loaded (/home/rkyasan44/.config/systemd/user/container-eloquent_hofstadter.service; enabled; vendor preset: disabled)
+     Active: active (running) since Thu 2023-11-09 21:49:26 IST; 1min 3s ago
+       Docs: man:podman-generate-systemd(1)
+    Process: 2767 ExecStartPre=/bin/rm -f /run/user/1000/container-eloquent_hofstadter.service.ctr-id (code=exited, status=0/SUCCE>
+   Main PID: 2783 (conmon)
+      Tasks: 3 (limit: 10972)
+     Memory: 1.2M
+        CPU: 212ms
+     CGroup: /user.slice/user-1000.slice/user@1000.service/app.slice/container-eloquent_hofstadter.service
+             ├─2780 /usr/bin/slirp4netns --disable-host-loopback --mtu=65520 --enable-sandbox --enable-seccomp --enable-ipv6 -c -e>
+             └─2783 /usr/bin/conmon --api-version 1 -c 8dd7542ee39d0dac8a636e1b1aa95f6673347ec757aca1670c038961f4163e97 -u 8dd7542>
+
+Nov 09 21:49:26 node1.domainX.example.com podman[2768]: 2023-11-09 21:49:26.647019814 +0530 IST m=+0.107293534 container create 8d>
+Nov 09 21:49:26 node1.domainX.example.com podman[2768]: 2023-11-09 21:49:26.599051148 +0530 IST m=+0.059324847 image pull  httpd
+Nov 09 21:49:26 node1.domainX.example.com podman[2768]: 2023-11-09 21:49:26.743375018 +0530 IST m=+0.203648812 container init 8dd7>
+Nov 09 21:49:26 node1.domainX.example.com systemd[1976]: Started Podman container-eloquent_hofstadter.service.
+Nov 09 21:49:26 node1.domainX.example.com podman[2768]: 2023-11-09 21:49:26.769164009 +0530 IST m=+0.229437802 container start 8dd>
+Nov 09 21:49:26 node1.domainX.example.com podman[2768]: 8dd7542ee39d0dac8a636e1b1aa95f6673347ec757aca1670c038961f4163e97
+Nov 09 21:49:26 node1.domainX.example.com friendly_raman[2783]: AH00558: httpd: Could not reliably determine the server's fully qu>
+Nov 09 21:49:26 node1.domainX.example.com friendly_raman[2783]: AH00558: httpd: Could not reliably determine the server's fully qu>
+Nov 09 21:49:26 node1.domainX.example.com friendly_raman[2783]: [Thu Nov 09 16:19:26.807406 2023] [mpm_event:notice] [pid 1:tid 13>
+Nov 09 21:49:26 node1.domainX.example.com friendly_raman[2783]: [Thu Nov 09 16:19:26.807571 2023] [core:notice] [pid 1:tid 1396975>
+
+
+=========================================== create volume ==============================================================================================================
+
+[rkyasan44@node1 ~]$ pwd
+/home/rkyasan44
+[rkyasan44@node1 ~]$ mkdir container-vol
+[rkyasan44@node1 ~]$ cd container-vol/
+[rkyasan44@node1 container-vol]$ cat > index.html
+Hello this is persists the volume from localmachine
+^C
+[rkyasan44@node1 container-vol]$ ls -ld /home/rkyasan44/container-vol/
+drwxr-xr-x. 2 rkyasan44 rkyasan44 24 Nov  9 22:02 /home/rkyasan44/container-vol/
+
+######Download images
+
+[rkyasan44@node1 container-vol]$ podman pull nginx
+Trying to pull docker.io/library/nginx:latest...
+Getting image source signatures
+Copying blob 6f837de2f887 skipped: already exists
+Copying blob 7170a263b582 skipped: already exists
+Copying blob 85c41ebe6d66 skipped: already exists
+Copying blob 8f28d06e2e2e skipped: already exists
+Copying blob e398db710407 skipped: already exists
+Copying blob 578acb154839 skipped: already exists
+Copying blob c1dfc7e1671e skipped: already exists
+Copying config c20060033e done
+Writing manifest to image destination
+Storing signatures
+c20060033e06f882b0fbe2db7d974d72e0887a3be5e554efdb0dcf8d53512647
+
+
+[rkyasan44@node1 container-vol]$ podman run -it -d --name nginx2 -p 9098:8080 -v /home/rkyasan44/container-vol/:/var/www/html:Z 7f6a969e81a5
+9a38cebd930b30c685845ebf0ca8443e14b129fa3cd083c2fcfac571796c6c0d
+[rkyasan44@node1 container-vol]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED         STATUS             PORTS                   NAMES
+2e348e4b4567  docker.io/library/httpd:latest  httpd-foreground  27 minutes ago  Up 27 minutes ago                          eloquent_hofstadter
+8dd7542ee39d  docker.io/library/httpd:latest  httpd-foreground  21 minutes ago  Up 21 minutes ago                          friendly_raman
+9a38cebd930b  docker.io/library/httpd:latest  httpd-foreground  5 seconds ago   Up 5 seconds ago   0.0.0.0:9098->8080/tcp  nginx2
+
+
+podman stop <containerid>
+podman rm <containerid>
+podman rmi <imageid>
+
+
+
 
 
 
