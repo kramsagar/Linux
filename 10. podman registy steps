@@ -1,0 +1,221 @@
+#By default podman installed on rhelv9. 
+#Now if you want to run the pod containers using rootless account, then you need to create your own regitry under rootless user home directory.
+
+#The global registry location:
+[rkyasan44@node1 registries.d]$ cd /etc/containers/
+[rkyasan44@node1 containers]$ pwd
+/etc/containers
+[rkyasan44@node1 containers]$ ls -ltr
+total 20
+-rw-r--r--. 1 root root 8643 Apr  1  2022 storage.conf
+-rw-r--r--. 1 root root 3921 Apr  1  2022 registries.conf #***************************** this is the important file for all registries info
+-rw-r--r--. 1 root root  569 Apr  1  2022 policy.json
+drwxr-xr-x. 2 root root    6 Apr  1  2022 certs.d
+drwxr-xr-x. 3 root root   21 Nov  6 17:48 oci
+drwxr-xr-x. 2 root root   96 Nov  6 17:48 registries.d
+drwxr-xr-x. 2 root root  107 Nov  6 17:48 registries.conf.d  
+[rkyasan44@node1 containers]$
+
+# Now take steps to make root less user registry
+
+[rkyasan44@node1 ~]$ mkdir -p .config/containers
+[rkyasan44@node1 containers]$ pwd
+/home/rkyasan44/.config/containers
+[rkyasan44@node1 containers]$ ls -ltr
+total 0
+[rkyasan44@node1 containers]$ cp -r /etc/containers/registries.conf .
+[rkyasan44@node1 containers]$ tree
+.
+└── registries.conf
+
+0 directories, 1 file
+[rkyasan44@node1 containers]$  # inside file registries.conf, below tags declared registry info
+
+unqualified-search-registries = ["registry.fedoraproject.org", "registry.access.redhat.com", "registry.centos.org", "quay.io", "docker.io"]
+
+#lets search  podman getting info of public registry or other registries declared in the unqualified-search-registries array.
+
+[rkyasan44@node1 containers]$ podman search httpd
+NAME                                             DESCRIPTION
+quay.io/centos7/httpd-24-centos7                 Apache httpd 2.4 available as container, is a powerful, efficient, and extensible web server. Ap....<br>Learn more <a href="https://github.com/sclorg/httpd-container/blob/master/2.4/root/usr/share/container-scripts/httpd/README.md">https://github.com/sclorg/httpd-container/blob/master/2.4/</a>
+quay.io/redhattraining/httpd-parent
+quay.io/tike/openshift-sp-httpd                  This is the httpd half of an Openshift-ready Shibboleth SP pod.
+quay.io/jbisson/ubi-base-httpd
+quay.io/openshifttest/httpd-24
+quay.io/spaship/httpd                            SPAship httpd
+quay.io/sclorg/httpd-24-c9s                       Apache HTTP Server 2.4 available as container, is a powerful, efficient, and extensible web server. Apache supports a variety of features, many implemented as compiled modules which extend the core functionality. These can range from server-side programming language support to authentication schemes. Virtual hosting allows one Apache installation to serve many different Web sites."   Usage in OpenShift ------------------ In this example, we assume that you are using the `rhel8/httpd-24` image, available through the `openshift/httpd:2.4-el8` imagestream tag in Openshift. To build a simple [httpd-sample-app](https://github.com/sclorg/httpd-ex.git) application in Openshift:  ``` oc new-app openshift/httpd:2.4-el8~https://github.com/sclorg/httpd-ex.git ```  To access the application: ``` $ oc get pods $ oc exec <pod> -- curl 127.0.0.1:8080 ```  Source-to-Image framework and scripts ------------------------------------- This image supports the [Source-to-Image](https://docs.openshift.com/container-platform/3.11/creating_images/s2i.html) (S2I) strategy in OpenShift. The Source-to-Image is an OpenShift framework which makes it easy to write images that take application source code as an input, use a builder image like this httpd container image, and produce a new image that runs the assembled application as an output.  To support the Source-to-Image framework, important scripts are included in the builder image:  * The `/usr/libexec/s2i/run` script is set as the default command in the resulting container image (the new image with the application artifacts).  * The `/usr/libexec/s2i/assemble` script inside the image is run to produce a new image with the application artifacts. The script takes sources of a given application and places them into appropriate directories inside the image. The structure of httpd-app can look like this:  **`./httpd-cfg`**          Can contain additional Apache configuration files (`*.conf`)  **`./httpd-pre-init`**          Can contain shell scripts (`*.sh`) that are sourced before `httpd` is started  **`./httpd-ssl`**          Can contain user's own SSL certificate (in the `certs/` subdirectory) and a key (in the `private/` subdirectory)  **`./`**          Application source code   Build an application using a Dockerfile --------------------------------------- Compared to the Source-to-Image strategy, using a Dockerfile is a more flexible way to build an httpd container image with an application. Use a Dockerfile when Source-to-Image is not sufficiently flexible for you or when you build the image outside of the OpenShift environment.  To use the httpd image in a Dockerfile, follow these steps:  #### 1. Pull a base builder image to build on  ``` podman pull rhel8/httpd-24 ```  #### 2. Pull an application code  An example application available at https://github.com/sclorg/httpd-ex.git is used here. To adjust the example application, clone the repository.  ``` git clone https://github.com/sclorg/httpd-ex.git app-src ```  #### 3. Prepare an application inside a container  This step usually consists of at least these parts:  * putting the application source into the container * moving certificates to the correct place (if available in the application source code) * setting the default command in the resulting image  For all these three parts, you can either set up all manually and use the `httpd` or `run-httpd` commands explicitly in the Dockerfile ([3.1.](#31-to-use-own-setup-create-a-dockerfile-with-this-content)), or you can use the Source-to-Image scripts inside the image ([3.2.](#32-to-use-the-source-to-image-scripts-and-build-an-image-using-a-dockerfile-create-a-dockerfile-with-this-content). For more information about these scripts, which enable you to set-up and run the httpd daemon, see the "Source-to-Image framework and scripts" section above.  ##### 3.1. To use your own setup, create a Dockerfile with this content: ``` FROM registry.redhat.io/rhel8/httpd-24  # Add application sources ADD app-src/index.html /var/www/html/index.html  # The run script uses standard ways to run the application CMD run-httpd ```  ##### 3.2. To use the Source-to-Image scripts and build an image using a Dockerfile, create a Dockerfile with this content: ``` FROM registry.redhat.io/rhel8/httpd-24  # Add application sources to a directory where the assemble script expects them # and set permissions so that the container runs without the root access USER 0 ADD app-src/index.html /tmp/src/index.html RUN chown -R 1001:0 /tmp/src USER 1001  # Let the assemble script install the dependencies RUN /usr/libexec/s2i/assemble  # The run script uses standard ways to run the application CMD /usr/libexec/s2i/run ```  #### 4. Build a new image from a Dockerfile prepared in the previous step  ``` podman build -t httpd-app . ```  #### 5. Run the resulting image with the final application  ``` podman run -d httpd-app ```   Direct usage with a mounted directory -------------------------------------  An example of the data on the host for both the examples above, which is served by The Apache HTTP web server:  ``` $ ls -lZ /wwwdata/html -rw-r--r--. 1 1001 1001 54321 Jan 01 12:34 index.html -rw-r--r--. 1 1001 1001  5678 Jan 01 12:34 page.html ```  If you want to run the image directly and mount the static pages available in the `/wwwdata/` directory on the host as a container volume, execute the following command:  ``` $ podman run -d --name httpd -p 8080:8080 -v /wwwdata:/var/www:Z rhel8/httpd-24 ```  This creates a container named `httpd` running the Apache HTTP Server, serving data from ` the /wwwdata/` directory. Port 8080 is exposed and mapped to the host.    Environment variables and volumes ---------------------------------  The Apache HTTP Server container image supports the following configuration variable, which can be set by using the `-e` option with the podman run command:  **`HTTPD_LOG_TO_VOLUME`**          By default, httpd logs into standard output, so the logs are accessible by using the podman logs command. When `HTTPD_LOG_TO_VOLUME` is set, httpd logs into `/var/log/httpd24`, which can be mounted to host system using the container volumes. This option is only allowed when container is run as UID 0.  **`HTTPD_MPM`**        The variable `HTTPD_MPM` can be set to change the default Multi-Processing Module (MPM) from the package default MPM.   If you want to run the image and mount the log files into `/wwwlogs` on the host as a container volume, execute the following command:  ``` $ podman run -d -u 0 -e HTTPD_LOG_TO_VOLUME=1 --name httpd -v /wwwlogs:/var/log/httpd24:Z rhel8/httpd-24 ```  To run an image using the `event` MPM (rather than the default `prefork`), execute the following command:  ``` $ podman run -d -e HTTPD_MPM=event --name httpd rhel8/httpd-24 ```  You can also set the following mount points by passing the `-v /host:/container` flag to podman.  **`/var/www`**          Apache HTTP Server data directory  **`/var/log/httpd24`**          Apache HTTP Server log directory (available only when running as root, path `/var/log/httpd` is used in case of Fedora based image)   **Notice: When mouting a directory from the host into the container, ensure that the mounted directory has the appropriate permissions and that the owner and group of the directory matches the user UID or name which is running inside the container.**  Default SSL certificates ------------------------  Default SSL certificates are generated when Apache HTTP server container is started for the first time or own SSL certificates were not provided (see bolow how to provide them). SSL certificates are not stored in the base image but generated, so each container will have unique default SSL key pair. SSL certificate/key are stored in /etc/httpd/tls directory:      /etc/httpd/tls/localhost.key     /etc/httpd/tls/localhost.crt   Using own SSL certificates -------------------------- In order to provide own SSL certificates for securing the connection with SSL, use the extending feature described above. In particular, put the SSL certificates into a separate directory inside your application:      ./httpd-ssl/certs/server-cert-selfsigned.pem     ./httpd-ssl/private/server-key.pem  The default behaviour is to look for the certificate and the private key in subdirectories certs/ and private/; those files will be used for the ssl settings in the httpd.   Default user ------------  By default, Apache HTTP Server container runs as UID 1001. That means the volume mounted directories for the files (if mounted using `-v` option) need to be prepared properly, so the UID 1001 can read them.  To run the container as a different UID, use `-u` option. For example if you want to run the container as UID 1234, execute the following command:  ``` podman run -d -u 1234 rhel8/httpd-24 ```  To log into a volume mounted directory, the container needs to be run as UID 0 (see above).   Troubleshooting --------------- The httpd deamon in the container logs to the standard output by default, so the log is available in the container log. The log can be examined by running:      podman logs <container>   See also -------- Dockerfile and other sources for this container image are available on https://github.com/sclorg/httpd-container. In that repository, the Dockerfile for CentOS7 is called Dockerfile, the Dockerfile for RHEL7 is called Dockerfile.rhel7, the Dockerfile for RHEL8 is called Dockerfile.rhel8, the Dockerfile for RHEL9 is called Dockerfile.rhel9, the Dockerfile for CentOS Stream 8 is called Dockerfile.c8s, the Dockerfile for CentOS Stream 9 is called Dockerfile.c9s, and the Dockerfile for Fedora is called Dockerfile.fedora.
+quay.io/netbull/httpd-tools
+quay.io/sjenning/httpd
+quay.io/ex280rakesh/httpd-task1
+quay.io/ocp-edge-qe/httpd
+quay.io/zanoni/httpd-example
+quay.io/polyu_lbsys/httpd
+quay.io/dbais76/httpd
+quay.io/workinginterface/httpd-24
+quay.io/ellery/compliance-httpd
+quay.io/mangal_lopchan/do180-custom-httpd
+quay.io/uccslinux/ubi8-php-80-httpd-webservices
+quay.io/kubeinit/httpd
+quay.io/arbhatta/httpd
+quay.io/redhattraining/httpd-noimage
+quay.io/redhattraining/do180-httpd-app
+quay.io/okonal/httpd
+quay.io/zanoni/httpd-desafio
+quay.io/kerberos5/httpd
+docker.io/library/httpd                          The Apache HTTP Server Project
+docker.io/clearlinux/httpd                       httpd HyperText Transfer Protocol (HTTP) server program with the benefits of Clear Linux OS
+docker.io/paketobuildpacks/httpd
+docker.io/vulhub/httpd
+docker.io/jitesoft/httpd                         Apache httpd on Alpine linux.
+docker.io/openquantumsafe/httpd                  Demo of post-quantum cryptography in Apache httpd. https://github.com/open-quantum-safe/oqs-demos
+docker.io/wodby/httpd
+docker.io/avenga/httpd-static
+docker.io/dockette/httpdump
+docker.io/betterweb/httpd
+docker.io/dockette/apache                        Apache / HTTPD
+docker.io/centos/httpd-24-centos7                Platform for running Apache httpd 2.4 or building httpd-based application
+docker.io/manageiq/httpd                         Container with httpd, built on CentOS for ManageIQ.
+docker.io/centos/httpd-24-centos8
+docker.io/dockerpinata/httpd
+docker.io/19022021/httpd-connection_test         This httpd image will test the connectivity of the endpoint.
+docker.io/publici/httpd                          httpd:latest
+docker.io/centos/httpd
+docker.io/httpdocker/kubia
+docker.io/e2eteam/httpd
+docker.io/manasip/httpd
+docker.io/solsson/httpd-openidc                  mod_auth_openidc on official httpd image, verified with Keycloak using docker-compose
+docker.io/httpdss/archerysec                     ArcherySec repository
+docker.io/patrickha/httpd-err
+docker.io/hypoport/httpd-cgi                     httpd-cgi
+[rkyasan44@node1 containers]$
+
+
+#Now trying to download image, then it will ask which repositories that image needs to download
+[rkyasan44@node1 containers]$ podman pull httpd
+? Please select an image:
+  ▸ registry.fedoraproject.org/httpd:latest
+    registry.access.redhat.com/httpd:latest
+    registry.centos.org/httpd:latest
+    quay.io/httpd:latest
+     * docker.io/library/httpd:latest   #-------> i choosed this
+
+
+[rkyasan44@node1 ~]$ podman run httpd
+✔ docker.io/library/httpd:latest
+Trying to pull docker.io/library/httpd:latest...
+Getting image source signatures
+Copying blob 10b9ab03bf45 done
+Copying blob c1a8c8567b78 done
+Copying blob 578acb154839 done
+Copying blob 74dbedf7ddc0 done
+Copying blob 6a3b76b70f73 done
+Copying config 7f6a969e81 done
+Writing manifest to image destination
+Storing signatures
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 10.0.2.100. Set the 'ServerName' directive globally to suppress this message
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 10.0.2.100. Set the 'ServerName' directive globally to suppress this message
+[Thu Nov 09 10:11:22.729360 2023] [mpm_event:notice] [pid 1:tid 140029214029696] AH00489: Apache/2.4.58 (Unix) configured -- resuming normal operations
+[Thu Nov 09 10:11:22.729624 2023] [core:notice] [pid 1:tid 140029214029696] AH00094: Command line: 'httpd -D FOREGROUND'
+
+............
+
+
+
+[rkyasan44@node1 ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED         STATUS             PORTS       NAMES
+8b2265d1dac9  docker.io/library/httpd:latest  httpd-foreground  39 seconds ago  Up 39 seconds ago              competent_shaw
+
+
+[rkyasan44@node1 ~]$ podman exec -it competent_shaw bash
+root@8b2265d1dac9:/usr/local/apache2# 
+root@8b2265d1dac9:/usr/local/apache2# ls -ltr
+total 36
+drwxr-xr-x. 2 root root 8192 Nov  1 02:33 modules
+drwxr-xr-x. 3 root root 8192 Nov  1 02:33 icons
+drwxr-xr-x. 2 root root   24 Nov  1 02:33 htdocs
+drwxr-xr-x. 3 root root 4096 Nov  1 02:33 error
+drwxr-xr-x. 2 root root   78 Nov  1 02:33 cgi-bin
+drwxr-xr-x. 2 root root 4096 Nov  1 02:33 include
+drwxr-xr-x. 2 root root 4096 Nov  1 02:33 bin
+drwxr-xr-x. 4 root root   84 Nov  1 02:33 conf
+drwxr-xr-x. 2 root root  167 Nov  1 02:33 build
+drwxr-xr-x. 1 root root   23 Nov  9 10:12 logs
+root@8b2265d1dac9:/tmp# cat > /tmp/123
+hello
+^C
+root@8b2265d1dac9:/tmp# exit
+
+[rkyasan44@node1 ~]$ podman exec -it competent_shaw cat /tmp/123
+hello
+=================================================================================================================================================================================================
+#Contianer modifictations:  we cannot modify changes in running container
+
+#Try remove running container:
+[rkyasan44@node1 ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED        STATUS            PORTS       NAMES
+8b2265d1dac9  docker.io/library/httpd:latest  httpd-foreground  9 minutes ago  Up 9 minutes ago              competent_shaw
+[rkyasan44@node1 ~]$ podman rm competent_shaw
+Error: cannot remove container 8b2265d1dac96eb023e10b311224dbf1675a0d86dca099a679b92042be5f3a7e as it is running - running or paused containers cannot be removed without force: container state improper
+[rkyasan44@node1 ~]$
+
+================================================================================================================
+#We need to stop contianer before remvoing it.
+[rkyasan44@node1 ~]$ podman stop competent_shaw
+competent_shaw
+[rkyasan44@node1 ~]$ podman ps -a
+CONTAINER ID  IMAGE                           COMMAND           CREATED        STATUS                    PORTS       NAMES
+ed9dbc794673  docker.io/library/httpd:latest  httpd-foreground  9 minutes ago  Exited (0) 8 minutes ago              sweet_proskuriakova
+8b2265d1dac9  docker.io/library/httpd:latest  httpd-foreground  8 minutes ago  Up 8 minutes ago                      competent_shaw
+[rkyasan44@node1 ~]$ podman rm competent_shaw
+8b2265d1dac96eb023e10b311224dbf1675a0d86dca099a679b92042be5f3a7e
+[rkyasan44@node1 ~]$
+[rkyasan44@node1 ~]$ podman ps -a
+CONTAINER ID  IMAGE                           COMMAND           CREATED         STATUS                     PORTS       NAMES
+ed9dbc794673  docker.io/library/httpd:latest  httpd-foreground  12 minutes ago  Exited (0) 10 minutes ago              sweet_proskuriakova
+[rkyasan44@node1 ~]$
+
+======================================inspect running container =========================================================================
+[rkyasan44@node1 ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED         STATUS             PORTS       NAMES
+2b2712f69a92  docker.io/library/httpd:latest  httpd-foreground  31 seconds ago  Up 32 seconds ago              gifted_lalande
+[rkyasan44@node1 ~]$ podman inspect gifted_lalande
+[
+     {
+          "Id": "2b2712f69a9225ad6d8ac9a03472ab9ddb9ad086cb07b3982dfe6685619266a2",
+          "Created": "2023-11-09T15:54:46.530792478+05:30",
+          "Path": "httpd-foreground",
+          "Args": [
+               "httpd-foreground"
+          ],
+          "State": {
+               "OciVersion": "1.0.2-dev",
+               "Status": "running",
+               "Running": true,
+================================================Port forwarding================================================================
+#container ports cannot be accessed from host post. it is restrict by SELinux
+
+[rkyasan44@node1 ~]$ podman run -d -it --name web1 -p 9090:80 httpd
+05392a5666a36c8aa90b3c0585ff5fbcd8dc30b8c5d0e2a8aa26d6522096e681
+[rkyasan44@node1 ~]$ podman ps
+CONTAINER ID  IMAGE                           COMMAND           CREATED        STATUS            PORTS                 NAMES
+2b2712f69a92  docker.io/library/httpd:latest  httpd-foreground  3 minutes ago  Up 3 minutes ago                        gifted_lalande
+05392a5666a3  docker.io/library/httpd:latest  httpd-foreground  3 seconds ago  Up 3 seconds ago  0.0.0.0:9090->80/tcp  web1
+[rkyasan44@node1 ~]$ curl localhost:9090
+<html><body><h1>It works!</h1></body></html>
+[rkyasan44@node1 ~]$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
